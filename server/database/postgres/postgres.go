@@ -48,7 +48,7 @@ func InitPostgre() {
 	checkError(err)
 
 	_ = DB.AutoMigrate(
-		&models.Post{},
+		&models.Item{},
 	)
 
 }

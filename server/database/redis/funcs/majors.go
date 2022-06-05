@@ -26,6 +26,9 @@ func Get(key string) ([]byte, error) {
 		data, err = redis.Bytes(conn.Do("GET", key))
 		checkError(err)
 	} else {
+		if err != nil {
+			checkErr(err)
+		}
 		err = fmt.Errorf("key does not exist")
 	}
 
@@ -56,6 +59,7 @@ func Exists(key string) (bool, error) {
 }
 
 func Delete(key string) error {
+	//TODO for items delete only sets state as inactive and does not delete
 	conn := redisdb.Pool.Get()
 	defer conn.Close()
 

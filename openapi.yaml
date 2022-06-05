@@ -1,0 +1,741 @@
+openapi: 3.0.1
+info:
+  title: Generic App 
+  description: 'This is a sample api for a generic app. Authorization partneeds to be worked on.'
+  termsOfService: http://tella.ai/terms/
+  contact:
+    email: apiteam@tella.ai
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+externalDocs:
+  description: Find out more about Swagger
+  url: http://tella.ai
+servers:
+- url: https://localhost:8080
+tags:
+- name: item
+  description: Everything about item. All shouldbe able to read and create but update only their own items.
+  externalDocs:
+    description: Find out more
+    url: http://tella.ai
+- name: api
+  description: Access api. Only admin should be able to write and all should be able to read
+- name: tag
+  description: Access tags. Tags get added via items. All should be able to read and write.
+- name: user
+  description: Operations about user
+  externalDocs:
+    description: Find out more about our store
+    url: http://tella.ai
+paths:
+  /tags:
+    get:
+      tags:
+      - tag
+      summary: Lists all tag names
+      description: Name of tags
+      operationId: listTags
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/xml:
+              schema:
+                type: array
+                description: return just the string and not the object
+                items:
+                  type: string
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        400:
+          description: Invalid tag name
+          content: {}
+        404:
+          description: Tags not found
+          content: {}
+      security:
+      - api_key: []
+  /apis:
+    get:
+      tags:
+      - api
+      summary: Lists all api names
+      description: Name and uri can be provided
+      operationId: listAPIs
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/xml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/API'
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/API'
+        400:
+          description: Invalid api name
+          content: {}
+        404:
+          description: Item not found
+          content: {}
+      security:
+      - api_key: []
+    post:
+      tags:
+      - api
+      summary: Add a new API
+      operationId: addAPI
+      requestBody:
+        description: API object that needs to be added to the store
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/API'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/API'
+        required: true
+      responses:
+        405:
+          description: Invalid input
+          content: {}
+      security:
+      - api_key: []
+      x-codegen-request-body-name: body
+  /apis/{apiName}:
+    get:
+      tags:
+      - api
+      summary: Lists sub api
+      description: Name and further sub-api can be provided
+      operationId: listChildrenAPIs
+      parameters:
+        - $ref: '#/components/parameters/apiName'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/xml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/API'
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/API'
+        400:
+          description: Invalid api name
+          content: {}
+        404:
+          description: API not found
+          content: {}
+      security:
+      - api_key: []
+    post:
+      tags:
+      - item
+      summary: Add a new item to the API
+      operationId: addItem
+      parameters:
+        - $ref: '#/components/parameters/apiName'
+      requestBody:
+        description: API object that needs to be added to the store
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Item'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Item'
+        required: true
+      responses:
+        405:
+          description: Invalid input
+          content: {}
+      security:
+      - itemstore_auth:
+        - write:items
+        - read:items
+      x-codegen-request-body-name: body
+  /api/{apiName}/findByStatus:
+    get:
+      tags:
+      - item
+      summary: Finds items by status within a given api
+      description: Multiple status values can be provided with comma separated strings
+      operationId: findItemsByStatus
+      parameters:
+        - $ref: '#/components/parameters/apiName'
+        - name: status
+          in: query
+          description: Status values that need to be considered for filter
+          required: true
+          schema:
+            $ref: '#/components/schemas/StatusEnum'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/xml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Item'
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Item'
+        400:
+          description: Invalid status value
+          content: {}
+      security:
+      - itemstore_auth:
+        - write:items
+        - read:items
+  /api/{apiName}/findByTags:
+    get:
+      tags:
+      - item
+      summary: Finds items by tags within a given api
+      description: Muliple tags can be provided with comma separated strings. Use tag1,
+        tag2, tag3 for testing.
+      operationId: findItemsByTags
+      parameters:
+        - $ref: '#/components/parameters/apiName'
+        - name: tags
+          in: query
+          description: Tags to filter by
+          required: true
+          style: form
+          explode: true
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/xml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Item'
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Item'
+        400:
+          description: Invalid tag value
+          content: {}
+      security:
+      - itemstore_auth:
+        - write:items
+        - read:items
+  /api/{apiName}/{itemId}:
+    get:
+      tags:
+      - item
+      summary: Find item by ID. This can even be a sub-api
+      description: Returns a single item
+      operationId: getItemById
+      parameters:
+        - $ref: '#/components/parameters/apiName'
+        - $ref: '#/components/parameters/itemId'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Item'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+        400:
+          description: Invalid ID supplied
+          content: {}
+        404:
+          description: Item not found
+          content: {}
+      security:
+      - api_key: []
+    put:
+      tags:
+      - item
+      summary: Updates a item in the store with form data
+      operationId: updateItem
+      parameters:
+        - $ref: '#/components/parameters/apiName'
+        - $ref: '#/components/parameters/itemId'
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              properties:
+                name:
+                  type: string
+                  description: Updated name of the item
+                status:
+                  type: string
+                  description: Updated status of the item
+      responses:
+        405:
+          description: Invalid input
+          content: {}
+      security:
+      - itemstore_auth:
+        - write:items
+        - read:items
+    delete:
+      tags:
+      - item
+      summary: Deletes a item
+      operationId: deleteItem
+      parameters:
+        - name: api_key
+          in: header
+          schema:
+            type: string
+        - $ref: '#/components/parameters/apiName'
+        - $ref: '#/components/parameters/itemId'
+      responses:
+        400:
+          description: Invalid ID supplied
+          content: {}
+        404:
+          description: Item not found
+          content: {}
+      security:
+      - itemstore_auth:
+        - write:items
+        - read:items
+  /api/{apiName}/uploadItems:
+    post:
+      tags:
+      - item
+      summary: uploads a file with items
+      operationId: uploadItems
+      parameters:
+        - $ref: '#/components/parameters/apiName'
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              properties:
+                additionalMetadata:
+                  type: string
+                  description: Additional data to pass to server
+                file:
+                  type: string
+                  description: file to upload
+                  format: binary
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+      security:
+      - itemstore_auth:
+        - write:items
+        - read:items
+  /api/{apiName}/{itemId}/uploadFile:
+    post:
+      tags:
+      - item
+      summary: uploads a file to the item
+      operationId: uploadFile
+      parameters:
+        - $ref: '#/components/parameters/apiName'
+        - $ref: '#/components/parameters/itemId'
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              properties:
+                additionalMetadata:
+                  type: string
+                  description: Additional data to pass to server
+                file:
+                  type: string
+                  description: file to upload
+                  format: binary
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+      security:
+      - itemstore_auth:
+        - write:items
+        - read:items
+  /apis/{apiName}/{itemId}/{child}:
+    get:
+      tags:
+      - api
+      summary: Lists child api items
+      description: Name and uri can be provided
+      operationId: listChildItems
+      parameters:
+      - $ref: '#/components/parameters/apiName'
+      - $ref: '#/components/parameters/itemId'
+      - name: child
+        in: path
+        description: name of N api list to return
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/xml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Reference'
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Reference'
+        400:
+          description: Invalid api name
+          content: {}
+        404:
+          description: Item not found
+          content: {}
+      security:
+      - api_key: []
+  /user:
+    post:
+      tags:
+      - user
+      summary: Create user
+      description: This can only be done by the logged in user.
+      operationId: createUser
+      requestBody:
+        description: Created user object
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      responses:
+        default:
+          description: successful operation
+          content: {}
+      x-codegen-request-body-name: body
+  /user/upload:
+    post:
+      tags:
+      - user
+      summary: Creates list of users with given input list
+      operationId: uploadUsers
+      requestBody:
+        description: List of user object
+        content:
+          '*/*':
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/User'
+        required: true
+      responses:
+        default:
+          description: successful operation
+          content: {}
+      x-codegen-request-body-name: body
+  /user/login:
+    post:
+      tags:
+      - user
+      summary: Logs user into the system
+      operationId: loginUser
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: object
+              properties:
+                username:
+                  description: The user name for login
+                  type: string
+                password:
+                  description: The password for login in clear text
+                  type: string
+              required:
+                - username
+                - password
+      responses:
+        200:
+          description: successful operation
+          headers:
+            X-Rate-Limit:
+              description: calls per hour allowed by the user
+              schema:
+                type: integer
+                format: int32
+            X-Expires-After:
+              description: date in UTC when token expires
+              schema:
+                type: string
+                format: date-time
+          content:
+            application/xml:
+              schema:
+                type: string
+            application/json:
+              schema:
+                type: string
+        400:
+          description: Invalid username/password supplied
+          content: {}
+  /user/logout:
+    get:
+      tags:
+      - user
+      summary: Logs out current logged in user session
+      operationId: logoutUser
+      responses:
+        default:
+          description: successful operation
+          content: {}
+  /user/{username}:
+    get:
+      tags:
+      - user
+      summary: Get user by user name
+      operationId: getUserByName
+      parameters:
+      - name: username
+        in: path
+        description: 'The name that needs to be fetched. Use user1 for testing. '
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/User'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        400:
+          description: Invalid username supplied
+          content: {}
+        404:
+          description: User not found
+          content: {}
+    put:
+      tags:
+      - user
+      summary: Updated user
+      description: This can only be done by the logged in user.
+      operationId: updateUser
+      parameters:
+      - name: username
+        in: path
+        description: name that need to be updated
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Updated user object
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      responses:
+        400:
+          description: Invalid user supplied
+          content: {}
+        404:
+          description: User not found
+          content: {}
+      x-codegen-request-body-name: body
+    delete:
+      tags:
+      - user
+      summary: Delete user
+      description: This can only be done by the logged in user.
+      operationId: deleteUser
+      parameters:
+      - name: username
+        in: path
+        description: The name that needs to be deleted
+        required: true
+        schema:
+          type: string
+      responses:
+        400:
+          description: Invalid username supplied
+          content: {}
+        404:
+          description: User not found
+          content: {}
+components:
+  schemas:
+    UserRef:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        username:
+          type: string
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        username:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        phone:
+          type: string
+        userStatus:
+          type: integer
+          description: User Status
+          format: int32
+      xml:
+        name: User
+    Tag:
+      type: object
+      properties:
+        name:
+          type: string
+      xml:
+        name: Tag
+    Reference:
+      description: Reference to an item or a sub-api 
+      anyOf:
+      - type: object
+        properties:
+          name:
+            type: string
+          uri:
+            type: string
+      - type: string
+    API:
+      description: A api name with possible sub api 
+      required:
+      - name
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        children:
+          type: array
+          xml:
+            name: children
+            wrapped: true
+          items:
+            $ref: '#/components/schemas/API'
+      xml:
+        name: Item
+    Item:
+      description: An item or a sub-api 
+      required:
+      - name
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        description:
+          type: string
+        tags:
+          type: array
+          xml:
+            name: tag
+            wrapped: true
+          items:
+            $ref: '#/components/schemas/Tag'
+        status:
+          $ref: '#/components/schemas/StatusEnum'
+        createdBy:
+          allOf:
+          - $ref: '#/components/schemas/UserRef'
+          - readOnly: true
+      xml:
+        name: Item
+    StatusEnum:
+      type: string
+      description: item status in the store
+      enum:
+      - active
+      - inWorkflow
+      - inactive
+    ApiResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        type:
+          type: string
+        message:
+          type: string
+  parameters:
+    apiName: 
+      name: apiName
+      in: path
+      description: name of api to return
+      required: true
+      schema:
+        type: string
+    itemId:
+      name: itemId
+      in: path
+      description: ID of item to update
+      required: true
+      schema:
+        type: integer
+        format: int64
+  securitySchemes:
+    itemstore_auth:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: http://itemsstore.tella.ai/oauth/dialog
+          scopes:
+            write:items: modify items in your account
+            read:items: read your items
+    api_key:
+      type: apiKey
+      name: api_key
+      in: header

@@ -19,8 +19,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'FGGP Boilerplate',
       theme: ThemeData(
-        primarySwatch: Colors.cyan,
-        accentColor: Colors.cyanAccent,
+        colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.cyan)
+            .copyWith(secondary: Colors.cyanAccent),
       ),
       home: const HomeScreen(),
       routes: {

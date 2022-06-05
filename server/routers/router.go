@@ -28,22 +28,41 @@ func InitRouter() *gin.Engine {
 
 	r.Use(gin.Recovery())
 
-	posts := r.Group("/api/post")
+	tags := r.Group("/tag")
 	{
-		posts.POST("/add", routers.AddPost)
-		posts.GET("/", routers.FetchPosts)
-		posts.GET("/last", routers.FetchLastPost)
-		posts.DELETE("/:id", routers.DeletePost)
-		posts.PATCH("/:id", routers.UpdatePost)
+		tags.GET("/:key", routers.ListTags)
 	}
 
-	announcements := r.Group("/api/announcement")
+	users := r.Group("/user")
 	{
-		announcements.POST("/add", routers.PostAnnouncement)
-		announcements.GET("/:key", routers.FetchAnnouncements)
-		announcements.PATCH("/:key")
-		announcements.DELETE("/:key", routers.DeleteAnnouncement)
+		users.POST("/", routers.CreateUser)
+		users.POST("/upload", routers.UploadUsers)
+		users.POST("/login", routers.LoginUser)
+		users.GET("/logout", routers.LogoutUser)
+		// users.GET("/", routers.ListUsers) //This is not allowed here. User list can be via the categories API
+		users.GET("/:username", routers.GetUserByName)
+		users.PUT("/:username", routers.UpdateUser)
+		users.DELETE("/:username", routers.DeleteUser)
 	}
 
+	apis := r.Group("/apis")
+	{
+		apis.POST("/", routers.AddAPI)
+		apis.GET("/", routers.ListAPIs)
+		apis.GET("/:apiName", routers.ListChildrenAPIs)
+		apis.GET("/:apiName/:itemId/:apiN", routers.ListChildItems)
+	}
+
+	items := r.Group("/api/:apiName")
+	{
+		items.POST("/", routers.AddItem)
+		items.POST("/uploadItems", routers.UploadItems)
+		items.POST("/:itemId/uploadFile", routers.UploadFile)
+		items.GET("/findByStatus", routers.FindItemsByStatus)
+		items.GET("/findByTags", routers.FindItemsByTags)
+		items.GET("/:itemId", routers.GetItemById)
+		items.PUT("/:itemId", routers.UpdateItem)
+		items.DELETE("/:itemId", routers.DeleteItem)
+	}
 	return r
 }
