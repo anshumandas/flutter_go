@@ -44,6 +44,7 @@ func Set(key string, value []byte) error {
 
 	return err
 }
+
 func Exists(key string) (bool, error) {
 
 	conn := redisdb.Pool.Get()

@@ -10,5 +10,6 @@ type Item struct {
 	Description string   `json:"description"`
 	Tags        []string `json:"tags"`
 	Status      string   `json:"status"` //TODO: change to enum
-	CreatedBy   string   `json:"created_by"`
+	CreatedBy   string   `json:"createdBy"`
+	Type        string   `json:"type"` //this need not be saved and instead can be taken from table key
 }

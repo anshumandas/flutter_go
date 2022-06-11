@@ -13,18 +13,18 @@ var (
 )
 
 func FetchAPIs() *[]models.API {
-	var categories []models.API
+	var apis []models.API
 	tx := postgres.DB.Preload("APIs", func(db *gorm.DB) *gorm.DB {
 		return db.Select("ID")
-	}).Find(&categories)
+	}).Find(&apis)
 	if tx.Error != nil {
-		fmt.Printf("error occurred with fetch categories function %v", tx.Error)
+		fmt.Printf("error occurred with fetch apis function %v", tx.Error)
 	}
-	return &categories
+	return &apis
 }
 
-func FetchLastAPI() models.API {
-	postgres.DB.First(&api)
+func FindAPI(name string) models.API {
+	postgres.DB.First(&api, name)
 	return api
 }
 

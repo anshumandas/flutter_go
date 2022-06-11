@@ -23,13 +23,14 @@ func FetchUsers() *[]models.User {
 	return &users
 }
 
-func FetchLastUser() models.User {
-	postgres.DB.First(&user)
+func FetchUser(name string) models.User {
+	postgres.DB.First(&user, name)
 	return user
 }
 
-func AddUser(name, description string, tags []string) uint {
-	newUser := models.User{Name: name}
+func AddUser(uname, fname, lname, email, phash, phone string) uint {
+	newUser := models.User{UserName: uname, FirstName: fname, LastName: lname, Email: email}
+	//TODO add status enum here. We can have a workflow initiated here
 	postgres.DB.Create(&newUser)
 	return newUser.ID
 }

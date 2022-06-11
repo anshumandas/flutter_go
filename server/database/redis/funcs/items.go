@@ -14,7 +14,7 @@ func checkErr(err error) {
 	}
 }
 
-func CreateItem(key, name, description string, tags []string, createdBy string) error {
+func CreateItem(_type, id, name, description string, tags []string, createdBy string) error {
 
 	//there is no uniqueness check required but the UI generates UUID and DB cannot have duplicate for that
 
@@ -24,8 +24,9 @@ func CreateItem(key, name, description string, tags []string, createdBy string) 
 		Tags:        tags,
 		Status:      "active",
 		CreatedBy:   createdBy,
+		Type:        _type, //Optional add if key has a separator
 	}
-
+	key := fmt.Sprintf("%s%s", _type, id) //TODO: add separator if not saving type
 	data, err := json.Marshal(a)
 	checkErr(err)
 
@@ -41,6 +42,8 @@ func CreateItem(key, name, description string, tags []string, createdBy string) 
 		checkErr(err)
 	}
 
+	//TODO: go through the tags array and spit them as events (Tag, ID). Asynchronously add the new tags to the DB
+	//TODO: if the item is of type user or api then send an event that will later add it in PostGresDB
 	return err
 }
 

@@ -25,20 +25,24 @@ func LogoutUser(ctx *gin.Context) {
 }
 
 func GetUserByName(ctx *gin.Context) {
-	post := postgrefuncs.FetchLastUser()
+	id := ctx.Param("username")
+	post := postgrefuncs.FetchUser(id)
 
 	ctx.JSON(http.StatusOK, gin.H{
-		"name": post.Name,
+		"username": post.UserName,
 	})
 }
 
 func CreateUser(ctx *gin.Context) {
+	//TODO: add validations
+	u := ctx.Query("username")
+	f := ctx.Query("firstname")
+	l := ctx.Query("lastname")
+	e := ctx.Query("email")
+	p := ctx.Query("password") //assume we are receiving hashed pwd only from client. TODO add more security
+	ph := ctx.Query("phone")
 
-	t := ctx.Query("title")
-	d := ctx.Query("description")
-	a := ctx.Query("tags")
-
-	id := postgrefuncs.AddUser(t, d, strings.Split(a, ","))
+	id := postgrefuncs.AddUser(u, f, l, e, p, ph)
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"id": id,

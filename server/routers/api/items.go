@@ -1,7 +1,6 @@
 package routers
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"strings"
@@ -18,20 +17,21 @@ func AddItem(ctx *gin.Context) {
 		name      = ctx.Query("name")
 		desc      = ctx.Query("description")
 		tags      = ctx.Query("tags")
-		createdBy = ctx.Query("createdBy")         //TODO this is from the user login context
-		key       = fmt.Sprintf("%s%s", api, name) //This can be UUID if name is not the primary key
+		createdBy = ctx.Query("createdBy") //TODO this is from the user login context
+		key       = name                   //This can be UUID if name is not the primary key
 	)
 
-	err := redisfuncs.CreateItem(key, name, desc, strings.Split(tags, ","), createdBy)
+	err := redisfuncs.CreateItem(api, key, name, desc, strings.Split(tags, ","), createdBy)
 	if err != nil {
 		ctx.JSON(http.StatusOK, gin.H{
-			"status": "Item with this title already exists!",
+			"status": "Item with this name already exists!",
 		})
 	} else {
 		ctx.JSON(http.StatusOK, gin.H{
-			"name":   name,
-			"author": createdBy,
-			"key":    key,
+			"name":      name,
+			"createdBy": createdBy,
+			"type":      api,
+			"id":        key,
 		})
 	}
 }
@@ -46,12 +46,18 @@ func UploadFile(ctx *gin.Context) {
 }
 
 func FindItemsByStatus(ctx *gin.Context) {
+	fetch(ctx, true, "status")
 }
 
 func FindItemsByTags(ctx *gin.Context) {
+	fetch(ctx, true, "tags")
 }
 
 func GetItemById(ctx *gin.Context) {
+	fetch(ctx, false)
+}
+
+func fetch(ctx *gin.Context, all bool, by ...string) {
 	var (
 		err  error
 		a    models.Item
@@ -59,20 +65,24 @@ func GetItemById(ctx *gin.Context) {
 	)
 
 	key := ctx.Param("key")
-	all := ctx.Query("all")
-
-	if all != "true" {
+	if all {
 		a, _, err = redisfuncs.GetItem(key, false)
 	} else {
 		a, keys, err = redisfuncs.GetItem(key, true)
+		q := ctx.Query(by[0])
+		if q != "" {
+			log.Printf("not implemented yet")
+			//cond: by=q
+			//use this value to check the returned list or use RediSearch
+		}
 	}
 
 	if err != nil {
-		noMatch(ctx)
-	} else if all != "true" {
+		noItemMatch(ctx)
+	} else if !all {
 		ctx.JSON(http.StatusOK, gin.H{
 			"key":       key,
-			"title":     a.Name,
+			"name":      a.Name,
 			"createdBy": a.CreatedBy,
 		})
 	} else {
@@ -80,7 +90,9 @@ func GetItemById(ctx *gin.Context) {
 
 		for _, k := range keys {
 			a, _, err = redisfuncs.GetItem(k, false)
-			anns = append(anns, a)
+			if err != nil {
+				anns = append(anns, a)
+			}
 		}
 
 		ctx.JSON(http.StatusOK, anns)
@@ -99,6 +111,6 @@ func DeleteItem(ctx *gin.Context) {
 
 func noItemMatch(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{
-		"status": "There is no item with this title",
+		"status": "There is no item with this name",
 	})
 }

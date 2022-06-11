@@ -12,10 +12,15 @@ var (
 	tag models.Tag
 )
 
+func FetchTag(name string) models.Tag {
+	postgres.DB.First(&tag, name)
+	return tag
+}
+
 func FetchTags() *[]models.Tag {
 	var tags []models.Tag
 	tx := postgres.DB.Preload("Tags", func(db *gorm.DB) *gorm.DB {
-		return db.Select("ID")
+		return db.Select("Name")
 	}).Find(&tags)
 	if tx.Error != nil {
 		fmt.Printf("error occurred with fetch tags function %v", tx.Error)
@@ -23,25 +28,16 @@ func FetchTags() *[]models.Tag {
 	return &tags
 }
 
-func FetchLastTag() models.Tag {
-	postgres.DB.First(&tag)
-	return tag
-}
-
-func AddTag(name, description string, tags []string) string {
+//These are called by the event consumers and not by REST services
+func AddTag(name string) string {
 	newTag := models.Tag{Name: name}
 	postgres.DB.Create(&newTag)
 	return newTag.Name
 }
 
-func DeleteTag(id int) {
-	postgres.DB.Delete(&tag, id)
-}
-
-func UpdateTag(id int, title, description, author string) {
-	postgres.DB.Model(&tag).Where("id=?", id).Updates(map[string]interface{}{
-		"title":       title,
-		"description": description,
-		"author":      author,
-	})
+func AddTagLinks(name string, id []string) string {
+	//TODO check if tag exists, if not then add else just append the ids
+	newTag := models.Tag{Name: name}
+	postgres.DB.Create(&newTag)
+	return newTag.Name
 }

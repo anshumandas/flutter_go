@@ -599,6 +599,7 @@ components:
   schemas:
     UserRef:
       type: object
+      readOnly: true
       properties:
         id:
           type: integer
@@ -624,9 +625,7 @@ components:
         phone:
           type: string
         userStatus:
-          type: integer
-          description: User Status
-          format: int32
+          $ref: '#/components/schemas/StatusEnum'
       xml:
         name: User
     Tag:
@@ -685,17 +684,20 @@ components:
             wrapped: true
           items:
             $ref: '#/components/schemas/Tag'
+        type:
+          type: string
+          description: 'name of the api in which this item is stored'
+          readOnly: true
         status:
           $ref: '#/components/schemas/StatusEnum'
         createdBy:
-          allOf:
-          - $ref: '#/components/schemas/UserRef'
-          - readOnly: true
+          $ref: '#/components/schemas/UserRef'
       xml:
         name: Item
     StatusEnum:
       type: string
       description: item status in the store
+      readOnly: true
       enum:
       - active
       - inWorkflow
