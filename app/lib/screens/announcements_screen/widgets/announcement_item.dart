@@ -7,7 +7,7 @@ import '../../../providers/announcements_provider.dart';
 import 'announcement_field.dart';
 
 class AnnouncementItem extends HookWidget {
-  const AnnouncementItem({Key key}) : super(key: key);
+  const AnnouncementItem({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +18,7 @@ class AnnouncementItem extends HookWidget {
         elevation: 6,
         child: Column(
           children: [
-           AnnouncementField(
+            AnnouncementField(
               controllerText: _announcement.title,
               fieldName: 'title',
             ),

@@ -10,11 +10,11 @@ import 'form_field.dart';
 
 class CustomForm extends HookWidget {
   const CustomForm({
-    @required Key key,
-    @required this.hintTexts,
-    @required this.controllers,
-    @required this.isPostForm,
-    @required this.buttonText,
+    required Key key,
+    required this.hintTexts,
+    required this.controllers,
+    required this.isPostForm,
+    required this.buttonText,
   }) : super(key: key);
 
   final List<String> hintTexts;

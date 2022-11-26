@@ -4,7 +4,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 
 class CustomFormField extends HookWidget {
   const CustomFormField(
-      {Key key, @required this.hintText, @required this.controller})
+      {Key? key, required this.hintText, required this.controller})
       : super(key: key);
 
   final String hintText;
@@ -20,7 +20,7 @@ class CustomFormField extends HookWidget {
         controller: controller,
         decoration: InputDecoration(hintText: hintText),
         validator: (value) {
-          if (value.isEmpty) {
+          if (value!.isEmpty) {
             return "Please, don't leave fields blank";
           }
           return null;

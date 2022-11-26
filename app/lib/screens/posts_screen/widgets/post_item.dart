@@ -7,7 +7,7 @@ import '../../../providers/posts_provider.dart';
 import 'post_field.dart';
 
 class PostItem extends HookWidget {
-  const PostItem({Key key}) : super(key: key);
+  const PostItem({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -19,15 +19,15 @@ class PostItem extends HookWidget {
         child: Column(
           children: [
             PostField(
-              controllerText: _post.title,
+              controllerText: _post.title!,
               fieldName: 'title',
             ),
             PostField(
-              controllerText: _post.description,
+              controllerText: _post.description!,
               fieldName: 'description',
             ),
             PostField(
-              controllerText: _post.author,
+              controllerText: _post.author!,
               fieldName: 'author',
             ),
           ],

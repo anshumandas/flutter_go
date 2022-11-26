@@ -12,7 +12,7 @@ import 'widgets/announcement_item.dart';
 final _addAnnouncementKey = UniqueKey();
 
 class AnnouncementsScreen extends HookWidget {
-  const AnnouncementsScreen({Key key}) : super(key: key);
+  const AnnouncementsScreen({Key? key}) : super(key: key);
 
   static const routeName = '/announcements';
 

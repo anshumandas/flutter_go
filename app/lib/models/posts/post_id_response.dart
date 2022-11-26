@@ -6,13 +6,13 @@ import 'package:http/http.dart' as http;
 import '../http_exception.dart';
 
 class PostID {
-  PostID({this.id});
+  PostID({required this.id});
 
   PostID.fromJson(Map<String, dynamic> json) {
     id = json['id'] as int;
   }
 
-  int id;
+  int id = 0;
 
   Map<String, dynamic> toJson() {
     final data = <String, dynamic>{};

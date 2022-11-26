@@ -13,13 +13,13 @@ import 'post.dart';
 const _postApiUrl = 'http://localhost/api/post/';
 
 class PostsList extends StateNotifier<List<Post>> {
-  PostsList([List<Post> initialPosts]) : super(initialPosts ?? []);
+  PostsList([List<Post>? initialPosts]) : super(initialPosts!);
 
   List<Post> parsePosts(String response) {
     final el = json.decode(response) as List<dynamic>;
     final posts = el
         .map((dynamic e) =>
-            e == null ? null : Post.fromJson(e as Map<String, dynamic>))
+            e == null ? Post() : Post.fromJson(e as Map<String, dynamic>))
         .toList();
     return posts;
   }
@@ -59,10 +59,10 @@ class PostsList extends StateNotifier<List<Post>> {
   }
 
   void edit(
-      {@required int id,
-      @required String title,
-      @required String description,
-      @required String author}) {
+      {required int id,
+      required String title,
+      required String description,
+      required String author}) {
     try {
       http.patch(
           '$_postApiUrl$id?title=$title&description=$description&author=$author');

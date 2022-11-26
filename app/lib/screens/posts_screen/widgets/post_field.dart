@@ -8,9 +8,9 @@ import '../../../providers/posts_provider.dart';
 
 class PostField extends HookWidget {
   const PostField({
-    Key key,
-    @required this.controllerText,
-    @required this.fieldName,
+    Key? key,
+    required this.controllerText,
+    required this.fieldName,
   }) : super(key: key);
 
   final String controllerText;
@@ -33,16 +33,16 @@ class PostField extends HookWidget {
         focused
             ? textEditingController.text = controllerText
             : context.read(postsListNotifier).edit(
-                  id: _post.id,
+                  id: _post.id!,
                   title: fieldName == 'title'
                       ? textEditingController.text
-                      : _post.title,
+                      : _post.title!,
                   description: fieldName == 'description'
                       ? textEditingController.text
-                      : _post.description,
+                      : _post.description!,
                   author: fieldName == 'author'
                       ? textEditingController.text
-                      : _post.author,
+                      : _post.author!,
                 );
       },
       child: ListTile(

@@ -11,7 +11,7 @@ import './widgets/post_item.dart';
 final _addPostKey = UniqueKey();
 
 class PostsScreen extends HookWidget {
-  const PostsScreen({Key key}) : super(key: key);
+  const PostsScreen({Key? key}) : super(key: key);
   static const routeName = '/posts';
 
   @override
@@ -27,7 +27,7 @@ class PostsScreen extends HookWidget {
       child: Scaffold(
         body: ListView(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
-          children: <Widget> [
+          children: <Widget>[
             CustomForm(
               key: _addPostKey,
               controllers: [

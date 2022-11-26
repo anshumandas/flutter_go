@@ -17,12 +17,12 @@ class Post {
     author = json['author'] as String;
   }
 
-  String createdAt;
-  String updatedAt;
-  int id;
-  String title;
-  String description;
-  String author;
+  String? createdAt;
+  String? updatedAt;
+  int? id;
+  String? title;
+  String? description;
+  String? author;
 
   Map<String, dynamic> toJson() {
     final data = <String, dynamic>{};
