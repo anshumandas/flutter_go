@@ -3,8 +3,8 @@ package schemata
 import (
 	"time"
 
-	interfaces "github.com/flutter_go/infinity/base"
-	enums "github.com/flutter_go/infinity/schemata/enums"
+	interfaces "github.com/flutter_go/framework/base"
+	enums "github.com/flutter_go/framework/schemata/enums"
 )
 
 //This is used to define the Schema of the Data

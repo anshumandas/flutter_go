@@ -1,9 +1,9 @@
 package schemata
 
 import (
-	interfaces "github.com/flutter_go/infinity/base"
-	goInterfaces "github.com/flutter_go/infinity/base/gointerfaces"
-	enums "github.com/flutter_go/infinity/schemata/enums"
+	interfaces "github.com/flutter_go/framework/base"
+	goInterfaces "github.com/flutter_go/framework/base/gointerfaces"
+	enums "github.com/flutter_go/framework/schemata/enums"
 )
 
 //This is used to define the Field of the Data
@@ -16,7 +16,7 @@ type Field struct {
 	DefaultValue    interface{}                 //any value type
 	Type            enums.DataType              `json:"type"`
 	Confidentiality enums.ConfidentialityString `json:"confidentiality"`
-	//field could be a Referred schema but in an embeded form
+	State           enums.SchemaState           `json:"state"`
 }
 
 func (a Field) Compare(b Field) int { //first by name and then by the order

@@ -1,7 +1,7 @@
 package interfaces
 
 import (
-	goInterfaces "github.com/flutter_go/infinity/base/gointerfaces"
+	goInterfaces "github.com/flutter_go/framework/base/gointerfaces"
 )
 
 type Reference struct {

@@ -11,8 +11,8 @@ import (
 	"encoding/json"
 	"time"
 
-	enums "github.com/flutter_go/infinity/base/enums"
-	goInterfaces "github.com/flutter_go/infinity/base/gointerfaces"
+	enums "github.com/flutter_go/framework/base/enums"
+	goInterfaces "github.com/flutter_go/framework/base/gointerfaces"
 )
 
 type Data struct {
