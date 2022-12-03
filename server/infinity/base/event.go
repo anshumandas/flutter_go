@@ -1,7 +1,7 @@
 package interfaces
 
 import (
-	goInterfaces "github.com/flutter_go/base/interfaces/go"
+	goInterfaces "github.com/flutter_go/infinity/base/gointerfaces"
 )
 
 type Event struct {

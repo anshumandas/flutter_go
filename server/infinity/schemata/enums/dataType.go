@@ -1,7 +1,7 @@
-package enums
+package schemata
 
 import (
-    "errors"
+	"errors"
 )
 
 type DataType int8
@@ -13,42 +13,42 @@ nullable : @ means reference (full PK), # means tag set name; !# means not in th
 
 const (
 	UndefinedDataType = iota - 1 //while we can use << iota to make it bitwise, will prefer DataType[] in the model instead
-	BooleanDataType 
-	StringDataType 
+	BooleanDataType
+	StringDataType
 	ShortDataType //16 bit
-	IntDataType //32 bit
-	WholeNumDataType 
-	NaturalNumDataType 
-	LongDataType //64 bit
-	FloatDataType //32 bit
+	IntDataType   //32 bit
+	WholeNumDataType
+	NaturalNumDataType
+	LongDataType   //64 bit
+	FloatDataType  //32 bit
 	DoubleDataType //64 bit
-	EnumDataType 
+	EnumDataType
 	ObjectDataType //denotes any complex type with schema, stored same as hash
-	DateTimeDataType 
-	DateDataType 
+	DateTimeDataType
+	DateDataType
 	TimeDataType //used for recurring cron etc
-	TextDataType 
-	RichTextDataType 
-	TupleDataType //(label
+	TextDataType
+	RichTextDataType
+	TupleDataType     //(label
 	ConditionDataType //same as boolean|string|[set of string that computes to boolean with and]. just a field name means null check
-	LinkDataType //is string that symbolises a link from the containing class
-	ListDataType //linked list; denoted as [$type]; can have duplicate values
-	SetDataType //unsorted set, denoted as &lt;$type&gt;; cannot have duplicate values
-	OsetDataType //ordered set or array list, denoted as &lt;[$type]&gt;; cannot have duplicate values; has index
-	SsetDataType //sorted set denoted as &lt;&lt;$type&gt;&gt;; can have duplicate values
-	WsetDataType //weighted&#x2F;scored set denoted as &lt;($type, $score_field_in_type)&gt;; can have duplicate values; only type_id and score_field values are saved
-	HashDataType //map&#x2F;dictionary&#x2F;hash of {$value_type, $key_type (omit for string) } pairs
-	AnyDataType //denotes any type above. stored as a (JSON) string
+	LinkDataType      //is string that symbolises a link from the containing class
+	ListDataType      //linked list; denoted as [$type]; can have duplicate values
+	SetDataType       //unsorted set, denoted as &lt;$type&gt;; cannot have duplicate values
+	OsetDataType      //ordered set or array list, denoted as &lt;[$type]&gt;; cannot have duplicate values; has index
+	SsetDataType      //sorted set denoted as &lt;&lt;$type&gt;&gt;; can have duplicate values
+	WsetDataType      //weighted&#x2F;scored set denoted as &lt;($type, $score_field_in_type)&gt;; can have duplicate values; only type_id and score_field values are saved
+	HashDataType      //map&#x2F;dictionary&#x2F;hash of {$value_type, $key_type (omit for string) } pairs
+	AnyDataType       //denotes any type above. stored as a (JSON) string
 )
 
 //Just use the Enum directly instead of Enum.ordinal()
 
 func ListDataTypes() [26]string {
-	l := [...]string{ "boolean", "string", "short", "int", "whole_num", "natural_num", "long", "float", "double", "enum", "object", "dateTime", "date", "time", "text", "richText", "tuple", "condition", "link", "list", "set", "oset", "sset", "wset", "hash", "any",  }
+	l := [...]string{"boolean", "string", "short", "int", "whole_num", "natural_num", "long", "float", "double", "enum", "object", "dateTime", "date", "time", "text", "richText", "tuple", "condition", "link", "list", "set", "oset", "sset", "wset", "hash", "any"}
 	return l
 }
 
-func (s DataType) String() string { //This is same as Enum.name 
+func (s DataType) String() string { //This is same as Enum.name
 	switch s {
 	case BooleanDataType:
 		return "boolean"
@@ -163,5 +163,3 @@ func ParseDataType(s string) (DataType, error) {
 	}
 	return UndefinedDataType, errors.New("unknown DataType")
 }
-
-
