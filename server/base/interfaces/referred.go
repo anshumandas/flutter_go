@@ -10,7 +10,7 @@ import (
 )
 
 type Referred struct {
-	Entry               //extends by embedding DataEntry
+	Data                //extends by embedding Entry
 	CreatedBy string    `json:"cBy0"` //ChangedBy of v=0
 	CreatedOn time.Time `json:"cOn0"`
 	DeletedBy string    `json:"dBy0,omitempty"` //ChangedBy of v=last

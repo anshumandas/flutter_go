@@ -1,6 +1,11 @@
 package interfaces
 
+import (
+	goInterfaces "github.com/flutter_go/base/interfaces/go"
+)
+
 type Event struct {
-	IdTyped
-	Apied
+	goInterfaces.BaseObject
+	goInterfaces.IdTyped
+	goInterfaces.Apied
 }

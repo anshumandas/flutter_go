@@ -1,10 +1,9 @@
 package interfaces
 
 type Embedded struct {
-	Event
+	Data
 	// Ranked
 	// Named
-	PrimaryKey0   string `json:"pk0"` //parent
 	SecondaryKey0 string `json:"sk0"` //self
 }
 
