@@ -12,7 +12,7 @@ import (
 	"time"
 
 	enums "github.com/flutter_go/framework/base/enums"
-	goInterfaces "github.com/flutter_go/framework/base/gointerfaces"
+	goInterfaces "github.com/flutter_go/framework/gointerfaces"
 )
 
 type Data struct {

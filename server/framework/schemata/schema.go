@@ -4,6 +4,7 @@ import (
 	"time"
 
 	interfaces "github.com/flutter_go/framework/base"
+	goInterfaces "github.com/flutter_go/framework/gointerfaces"
 	enums "github.com/flutter_go/framework/schemata/enums"
 )
 
@@ -12,7 +13,7 @@ import (
 
 type Schema struct {
 	interfaces.Referred                             //Schema is a Data
-	Detail                                          //Schema itself is a Detail
+	goInterfaces.Detail                             //Schema itself is a Detail
 	Fields              map[string]Field            `json:"fields"`
 	Namespace           string                      `json:"ns"`
 	Type                enums.SchemaType            `json:"type"`
@@ -36,7 +37,7 @@ func NewByName(name string) *Schema {
 	return &s
 }
 
-func NewByDetail(detail Detail) *Schema {
+func NewByDetail(detail goInterfaces.Detail) *Schema {
 	s := Schema{}
 	s.Detail = detail
 	return &s

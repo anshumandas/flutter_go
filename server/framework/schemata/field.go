@@ -2,7 +2,7 @@ package schemata
 
 import (
 	interfaces "github.com/flutter_go/framework/base"
-	goInterfaces "github.com/flutter_go/framework/base/gointerfaces"
+	goInterfaces "github.com/flutter_go/framework/gointerfaces"
 	enums "github.com/flutter_go/framework/schemata/enums"
 )
 
@@ -12,7 +12,7 @@ import (
 type Field struct {
 	goInterfaces.Ordered
 	interfaces.Embedded //Field is Embedded and not Referable
-	Detail
+	goInterfaces.Detail
 	DefaultValue    interface{}                 //any value type
 	Type            enums.DataType              `json:"type"`
 	Confidentiality enums.ConfidentialityString `json:"confidentiality"`

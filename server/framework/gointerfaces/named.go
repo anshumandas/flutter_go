@@ -1,4 +1,4 @@
-package schemata
+package interfaces
 
 import "strings"
 

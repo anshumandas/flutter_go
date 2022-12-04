@@ -1,4 +1,4 @@
-package schemata
+package interfaces
 
 //This is a simple struct with name and description
 
