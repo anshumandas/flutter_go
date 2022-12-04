@@ -1,10 +1,9 @@
-package redisfuncs
+package redisdb
 
 import (
 	"fmt"
 	"log"
 
-	redisdb "github.com/flutter_go/database/redis"
 	"github.com/gomodule/redigo/redis"
 )
 
@@ -15,7 +14,7 @@ func checkError(err error) {
 }
 
 func Get(key string) ([]byte, error) {
-	conn := redisdb.Pool.Get()
+	conn := Pool.Get()
 	defer conn.Close()
 
 	exists, err := Exists(key)
@@ -27,7 +26,7 @@ func Get(key string) ([]byte, error) {
 		checkError(err)
 	} else {
 		if err != nil {
-			checkErr(err)
+			checkError(err)
 		}
 		err = fmt.Errorf("key does not exist")
 	}
@@ -36,18 +35,18 @@ func Get(key string) ([]byte, error) {
 }
 
 func Set(key string, value []byte) error {
-	conn := redisdb.Pool.Get()
+	conn := Pool.Get()
 	defer conn.Close()
 
 	_, err := conn.Do("SET", key, value)
-	checkErr(err)
+	checkError(err)
 
 	return err
 }
 
 func Exists(key string) (bool, error) {
 
-	conn := redisdb.Pool.Get()
+	conn := Pool.Get()
 	defer conn.Close()
 
 	var err error
@@ -61,7 +60,7 @@ func Exists(key string) (bool, error) {
 
 func Delete(key string) error {
 	//TODO for items delete only sets state as inactive and does not delete
-	conn := redisdb.Pool.Get()
+	conn := Pool.Get()
 	defer conn.Close()
 
 	_, err := conn.Do("DEL", key)
@@ -70,7 +69,7 @@ func Delete(key string) error {
 }
 
 func GetKeys(pattern string) ([]string, error) {
-	conn := redisdb.Pool.Get()
+	conn := Pool.Get()
 	defer conn.Close()
 
 	var (

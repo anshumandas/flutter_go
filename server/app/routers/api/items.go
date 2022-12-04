@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"strings"
 
-	redisfuncs "github.com/flutter_go/database/redis/funcs"
-	"github.com/flutter_go/models"
+	redisfuncs "github.com/flutter_go/app/database/redis"
+	"github.com/flutter_go/app/models"
 	"github.com/gin-gonic/gin"
 )
 
@@ -103,7 +103,7 @@ func fetch(ctx *gin.Context, all bool, by ...string) {
 func DeleteItem(ctx *gin.Context) {
 	key := ctx.Param("key")
 
-	err := redisfuncs.Delete(key)
+	err := redisfuncs.DeleteItem(key)
 	if err != nil {
 		log.Printf("Failed to delete item: %v", err)
 	}

@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	postgrefuncs "github.com/flutter_go/database/postgres/funcs"
+	postgrefuncs "github.com/flutter_go/app/database/postgres"
 	"github.com/gin-gonic/gin"
 )
 

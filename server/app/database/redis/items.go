@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/flutter_go/models"
+	"github.com/flutter_go/app/models"
+	db "github.com/flutter_go/framework/base/databases/redis"
 )
 
 func checkErr(err error) {
@@ -31,14 +32,14 @@ func CreateItem(_type, id, name, description string, tags []string, createdBy st
 	checkErr(err)
 
 	var yes bool
-	yes, err = Exists(key)
+	yes, err = db.Exists(key)
 	if yes {
 		err = fmt.Errorf("item with this id already exists")
 	} else {
 		if err != nil {
 			checkErr(err)
 		}
-		err = Set(key, data)
+		err = db.Set(key, data)
 		checkErr(err)
 	}
 
@@ -56,10 +57,10 @@ func GetItem(key string, all bool) (models.Item, []string, error) {
 	)
 
 	if !all {
-		data, err = Get(key)
+		data, err = db.Get(key)
 	} else {
 		key = "item*"
-		keys, err = GetKeys(key)
+		keys, err = db.GetKeys(key)
 	}
 
 	if err != nil {
@@ -69,4 +70,8 @@ func GetItem(key string, all bool) (models.Item, []string, error) {
 		checkErr(err)
 	}
 	return a, keys, err
+}
+
+func DeleteItem(key string) error {
+	return db.Delete(key)
 }

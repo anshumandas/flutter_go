@@ -10,17 +10,16 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/flutter_go/database/postgres"
-	redisdb "github.com/flutter_go/database/redis"
-	"github.com/flutter_go/routers"
+	db "github.com/flutter_go/app/database"
+	"github.com/flutter_go/app/routers"
 	"github.com/flutter_go/settings"
 	"github.com/rs/cors"
 )
 
 func init() {
 	settings.InitSettings()
-	postgres.InitPostgre()
-	redisdb.InitRedis()
+	db.InitPostgre()
+	db.InitRedis()
 }
 
 func main() {

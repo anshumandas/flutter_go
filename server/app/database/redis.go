@@ -1,17 +1,16 @@
-package redisdb
+package db
 
 import (
 	"log"
 
+	redisdb "github.com/flutter_go/framework/base/databases/redis"
 	"github.com/flutter_go/settings"
 	"github.com/gomodule/redigo/redis"
 )
 
-var Pool *redis.Pool
-
 func InitRedis() {
 
-	Pool = &redis.Pool{
+	redisdb.Pool = &redis.Pool{
 		MaxIdle:     settings.RedisSettings.MaxIdle,
 		MaxActive:   settings.RedisSettings.MaxActive,
 		IdleTimeout: settings.RedisSettings.IdleTimeout,

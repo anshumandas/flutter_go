@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/flutter_go/models"
+	"github.com/flutter_go/app/models"
+	db "github.com/flutter_go/framework/base/databases/redis"
 )
 
 func checkAPIErr(err error) {
@@ -26,14 +27,14 @@ func CreateAPI(name, description string, children []string) error {
 	checkAPIErr(err)
 
 	var yes bool
-	yes, err = Exists(name)
+	yes, err = db.Exists(name)
 	if yes {
 		err = fmt.Errorf("post with this title already exists")
 	} else {
 		if err != nil {
 			checkAPIErr(err)
 		}
-		err = Set(name, data)
+		err = db.Set(name, data)
 		checkAPIErr(err)
 	}
 
@@ -49,10 +50,10 @@ func GetAPI(key string, all bool) (models.API, []string, error) {
 	)
 
 	if !all {
-		data, err = Get(key)
+		data, err = db.Get(key)
 	} else {
 		key = "api*"
-		keys, err = GetKeys(key)
+		keys, err = db.GetKeys(key)
 	}
 
 	if err != nil {
@@ -62,4 +63,8 @@ func GetAPI(key string, all bool) (models.API, []string, error) {
 		checkAPIErr(err)
 	}
 	return a, keys, err
+}
+
+func DeleteAPI(key string) error {
+	return db.Delete(key)
 }

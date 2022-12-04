@@ -5,7 +5,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/flutter_go/routers"
+	"github.com/flutter_go/app/routers"
 	"gorm.io/gorm/utils/tests"
 )
 

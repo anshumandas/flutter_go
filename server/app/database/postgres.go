@@ -1,4 +1,4 @@
-package postgres
+package db
 
 import (
 	"fmt"
@@ -6,20 +6,13 @@ import (
 	"os"
 	"time"
 
-	"github.com/flutter_go/models"
+	"github.com/flutter_go/app/models"
+	pg "github.com/flutter_go/framework/base/databases/postgres"
 	"github.com/flutter_go/settings"
-	"gorm.io/driver/postgres"
+	"gorm.io/driver/postgres" //postgres var is from here
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 )
-
-var DB *gorm.DB
-
-func checkError(err error) {
-	if err != nil {
-		log.Fatal(err)
-	}
-}
 
 func InitPostgre() {
 	var err error
@@ -40,14 +33,14 @@ func InitPostgre() {
 		s.Host, s.User, s.Password, s.DBName, s.Addr, s.SSLMode, s.TimeZone,
 	)
 
-	DB, err = gorm.Open(postgres.New(postgres.Config{
+	pg.DB, err = gorm.Open(postgres.New(postgres.Config{
 		DSN: dsn,
 	}), &gorm.Config{
 		Logger: newLogger,
 	})
-	checkError(err)
+	pg.CheckError(err)
 
-	_ = DB.AutoMigrate(
+	_ = pg.DB.AutoMigrate(
 		&models.Item{},
 	)
 
