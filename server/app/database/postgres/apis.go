@@ -3,8 +3,8 @@ package postgrefuncs
 import (
 	"fmt"
 
+	"github.com/flutter_go/app/models"
 	postgres "github.com/flutter_go/framework/base/databases/postgres"
-	"github.com/flutter_go/models"
 	"gorm.io/gorm"
 )
 
