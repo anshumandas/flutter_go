@@ -5,7 +5,10 @@ package schemata
 
 type Relation struct {
 	Field
-	LinkedType string
-	Embedded   bool
+	ReverseName        string
+	LinkedSchema       string
+	Embedded           bool
+	CounterName        string
+	ReverseCounterName string
 	//field could be a Referred schema but in an embeded form
 }

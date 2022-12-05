@@ -7,12 +7,6 @@ import (
 	"github.com/gomodule/redigo/redis"
 )
 
-func checkError(err error) {
-	if err != nil {
-		log.Fatalf("Error occured with redis functions: %v", err)
-	}
-}
-
 func Get(key string) ([]byte, error) {
 	conn := Pool.Get()
 	defer conn.Close()
@@ -23,10 +17,10 @@ func Get(key string) ([]byte, error) {
 
 	if exists {
 		data, err = redis.Bytes(conn.Do("GET", key))
-		checkError(err)
+		CheckError(err)
 	} else {
 		if err != nil {
-			checkError(err)
+			CheckError(err)
 		}
 		err = fmt.Errorf("key does not exist")
 	}
@@ -39,7 +33,7 @@ func Set(key string, value []byte) error {
 	defer conn.Close()
 
 	_, err := conn.Do("SET", key, value)
-	checkError(err)
+	CheckError(err)
 
 	return err
 }
@@ -53,7 +47,7 @@ func Exists(key string) (bool, error) {
 	var isOK bool
 
 	isOK, err = redis.Bool(conn.Do("EXISTS", key))
-	checkError(err)
+	CheckError(err)
 
 	return isOK, err
 }

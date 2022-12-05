@@ -7,7 +7,7 @@ package schemata
 
 type Document struct {
 	Schema                       //Document itself is a Schema
-	Sections map[string]Document `json:"_sctn,omitempty"` //contains sections of Documents. For parallel flow must create sections that can be worked in parallel
+	Sections map[string]Document `json:"sections,omitempty"` //contains sections of Documents. For parallel flow must create sections that can be worked in parallel
 }
 
 // The generated class section variables (map key as names) of defined schema

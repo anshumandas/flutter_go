@@ -14,16 +14,16 @@ import (
 type Schema struct {
 	interfaces.Referred                             //Schema is a Data
 	goInterfaces.Detail                             //Schema itself is a Detail
-	Fields              map[string]Field            `json:"fields"`
-	Namespace           string                      `json:"ns"`
 	Type                enums.SchemaType            `json:"type"`
-	Plural              string                      `json:"plural"`
+	Fields              map[string]Field            `json:"fields,omitempty"`
+	Namespace           string                      `json:"ns,omitempty"`
+	Plural              string                      `json:"plural,omitempty"`
 	Confidentiality     enums.ConfidentialityString `json:"confidentiality"`
 	State               enums.SchemaState           `json:"state"`
 	Retention           time.Duration               `json:"retention"`
 	Workflow            string                      `json:"workflow,omitempty"`
-	Within              interfaces.Reference        `json:"within"` //Used incase this is a nested schema
-	Tags                []string                    `json:"tags"`
+	Within              interfaces.Reference        `json:"within,omitempty"` //Used incase this is a nested schema
+	Tags                []string                    `json:"tags,omitempty"`   //can be used as choices for enums and sets
 }
 
 func New() *Schema {

@@ -13,10 +13,21 @@ type Field struct {
 	goInterfaces.Ordered
 	interfaces.Embedded //Field is Embedded and not Referable
 	goInterfaces.Detail
-	DefaultValue    interface{}                 //any value type
 	Type            enums.DataType              `json:"type"`
-	Confidentiality enums.ConfidentialityString `json:"confidentiality"`
-	State           enums.SchemaState           `json:"state"`
+	DefaultValue    interface{}                 `json:"default,omitempty"`         //any value type
+	Confidentiality enums.ConfidentialityString `json:"confidentiality,omitempty"` //default is of parent schema
+	Required        bool                        `json:"required,omitempty"`
+	Mutability      enums.Editability           `json:"editability,omitempty"` //default is mutable
+	MinValue        interface{}                 `json:"min,omitempty"`         //used for numbers and date
+	MaxValue        interface{}                 `json:"max,omitempty"`         //used for numbers and date
+	StepValue       interface{}                 `json:"step,omitempty"`        //used for numbers and date
+	Options         string                      `json:"options,omitempty"`     //either links a schema or [values,]
+	Excludes        string                      `json:"excludes,omitempty"`    //either links a schema or [values,]
+	AllowOther      bool                        `json:"other,omitempty"`       //allow an Other option in the dropdown
+	Pattern         string                      `json:"pattern,omitempty"`     //regex
+	State           enums.SchemaState           `json:"state,omitempty"`
+	Index           enums.Indexed               `json:"index,omitempty"`
+	Tags            []string                    `json:"tags,omitempty"`
 }
 
 func (a Field) Compare(b Field) int { //first by name and then by the order

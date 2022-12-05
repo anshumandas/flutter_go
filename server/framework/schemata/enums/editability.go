@@ -5,17 +5,16 @@ import (
 )
 
 type Editability int8
-type EditabilityString string //provides a union with string and thus lets us extend the enum
 
 const (
-	UndefinedEditability          = iota - 1 //while we can use << iota to make it bitwise, will prefer Editability[] in the model instead
-	IdEditability                            //editable only on creation, always required, default option
-	EditableIfRequiredEditability            //editable only if required on creation
-	ImmutableEditability                     //only if not an Id field
-	UpdateIfNullEditability                  //only if not a required field, only set if null
-	MutableEditability                       //always editable but versioned, default option
-	MutableInWorkflowEditability
-	UnversionedEditability //always editable and not versioned, should be for system only and not user edited
+	UndefinedEditability         = iota - 1 //while we can use << iota to make it bitwise, will prefer Editability[] in the model instead
+	KeyFieldEditability                     //editable only on creation, always required, default option
+	SummaryFieldEditability                 //editable only if required on creation
+	ImmutableEditability                    //only if not an Id field
+	UpdateIfNullEditability                 //only if not a required field, only set if null
+	MutableEditability                      //always editable but versioned, default option
+	MutableInWorkflowEditability            //allows workflow editability
+	SystemFieldEditability                  //always editable and not versioned, should be for system only and not user edited
 )
 
 //Just use the Enum directly instead of Enum.ordinal()
@@ -27,9 +26,9 @@ func ListEditabilities() [7]string {
 
 func (s Editability) String() string { //This is same as Enum.name
 	switch s {
-	case IdEditability:
+	case KeyFieldEditability:
 		return "Id"
-	case EditableIfRequiredEditability:
+	case SummaryFieldEditability:
 		return "EditableIfRequired"
 	case ImmutableEditability:
 		return "Immutable"
@@ -39,7 +38,7 @@ func (s Editability) String() string { //This is same as Enum.name
 		return "Mutable"
 	case MutableInWorkflowEditability:
 		return "MutableInWorkflow"
-	case UnversionedEditability:
+	case SystemFieldEditability:
 		return "Unversioned"
 	}
 	return "unknown"
@@ -48,9 +47,9 @@ func (s Editability) String() string { //This is same as Enum.name
 func ParseEditability(s string) (Editability, error) {
 	switch s {
 	case "Id":
-		return IdEditability, nil
+		return KeyFieldEditability, nil
 	case "EditableIfRequired":
-		return EditableIfRequiredEditability, nil
+		return SummaryFieldEditability, nil
 	case "Immutable":
 		return ImmutableEditability, nil
 	case "UpdateIfNull":
@@ -60,7 +59,7 @@ func ParseEditability(s string) (Editability, error) {
 	case "MutableInWorkflow":
 		return MutableInWorkflowEditability, nil
 	case "Unversioned":
-		return UnversionedEditability, nil
+		return SystemFieldEditability, nil
 	}
 	return UndefinedEditability, errors.New("unknown Editability")
 }
