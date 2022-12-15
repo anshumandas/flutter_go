@@ -10,11 +10,12 @@ import (
 )
 
 type Referred struct {
-	Data                //extends by embedding Entry
-	CreatedBy string    `json:"cBy0"` //ChangedBy of v=0
-	CreatedOn time.Time `json:"cOn0"`
-	DeletedBy string    `json:"dBy0,omitempty"` //ChangedBy of v=last
-	DeletedOn time.Time `json:"dOn0,omitempty"`
+	Data                  //extends by embedding Entry
+	CreatedBy0 string     `json:"cBy0"` //ChangedBy of v=0
+	CreatedOn0 time.Time  `json:"cOn0"`
+	DeletedBy0 string     `json:"dBy0,omitempty"` //ChangedBy of v=last
+	DeletedOn0 time.Time  `json:"dOn0,omitempty"`
+	Old0       []Referred `json:"old0,omitempty"`
 }
 
 func (d *Referred) String() string {

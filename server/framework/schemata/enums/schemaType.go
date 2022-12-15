@@ -10,8 +10,8 @@ type SchemaTypeString string //provides a union with string and thus lets us ext
 const (
 	UndefinedSchemaType = iota - 1 //while we can use << iota to make it bitwise, will prefer SchemaType[] in the model instead
 	SortedSetSchemaType
-	ReferrableSchemaType //Referrable can be both Form and Timeseries. Must have an id which is referred
-	EmbeddedSchemaType   //part of the main referable entry. In RDBMS may have an internal id which need not be sent in the objectjust name of already defined field
+	ReferrableSchemaType //Referrable can be both Form and Timeseries. Must have an id which is referred. It is possible to Embed this also
+	EmbeddedSchemaType   //part of the main referable entry and cannot be referred directly. In RDBMS may have an internal id which need not be sent in the object just name of already defined field
 	EnumSchemaType       //not necessary to be in DB as is part of the code
 	HashSchemaType       //is a simple key value pair entry
 	SetSchemaType        //is a single field entry in the DB

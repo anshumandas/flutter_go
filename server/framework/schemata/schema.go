@@ -1,7 +1,7 @@
 package schemata
 
 import (
-	"time"
+	"encoding/json"
 
 	interfaces "github.com/flutter_go/framework/base"
 	goInterfaces "github.com/flutter_go/framework/gointerfaces"
@@ -12,18 +12,16 @@ import (
 //do not use field name starting with _ here or any other schema. it is only in the interfaces package where we use in the json tag
 
 type Schema struct {
-	interfaces.Referred                             //Schema is a Data
-	goInterfaces.Detail                             //Schema itself is a Detail
-	Type                enums.SchemaType            `json:"type"`
-	Fields              map[string]Field            `json:"fields,omitempty"`
-	Namespace           string                      `json:"ns,omitempty"`
-	Plural              string                      `json:"plural,omitempty"`
-	Confidentiality     enums.ConfidentialityString `json:"confidentiality"`
-	State               enums.SchemaState           `json:"state"`
-	Retention           time.Duration               `json:"retention"`
-	Workflow            string                      `json:"workflow,omitempty"`
-	Within              interfaces.Reference        `json:"within,omitempty"` //Used incase this is a nested schema
-	Tags                []string                    `json:"tags,omitempty"`   //can be used as choices for enums and sets
+	interfaces.Referred //Schema is a Data
+	goInterfaces.Detail //Schema itself is a Detail
+	goInterfaces.Tagged
+	Type      enums.SchemaType  `json:"type"`
+	Namespace string            `json:"ns,omitempty"`
+	Plural    string            `json:"plural,omitempty"`
+	State     enums.SchemaState `json:"state"`
+
+	FormSchema    `visibility_Type:"-EnumSchema,-SetSchema"` //Group visibility for Type. - means exclude. can be comma delimited
+	ChoicesSchema `visibility_Type:"EnumSchema,SetSchema"`   //Group visibility for Type. - means exclude. can be comma delimited
 }
 
 func New() *Schema {
@@ -41,4 +39,19 @@ func NewByDetail(detail goInterfaces.Detail) *Schema {
 	s := Schema{}
 	s.Detail = detail
 	return &s
+}
+
+func (w Schema) MarshalJSON() ([]byte, error) {
+	//TODO: This method must be overridden
+	return json.Marshal(struct {
+		Schema
+		Type0 string `json:"t0"`
+	}{
+		//add all other fields
+		Type0: w.Type0(),
+	})
+}
+
+func (p Schema) Type0() string {
+	return "Schema#" + p.Type.String()
 }

@@ -13,12 +13,12 @@ func (w Typed) MarshalJSON() ([]byte, error) {
 		Type0 string `json:"t0"`
 	}{
 		//add all other fields
-		Type0: w.type0,
+		Type0: w.Type0(),
 	})
 }
 
 func (p Typed) Type0() string {
-	return p.type0
+	return p.type0 //We can also use reflect.TypeOf(). However this may be faster and easier especially if code is generated
 }
 
 //This is not needed as every sub class should do a class type setting in their declaration

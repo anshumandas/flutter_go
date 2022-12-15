@@ -5,10 +5,9 @@ package schemata
 
 type Relation struct {
 	Field
-	ReverseName        string
-	LinkedSchema       string
-	Embedded           bool
-	CounterName        string
-	ReverseCounterName string
-	//field could be a Referred schema but in an embeded form
+	ReverseName        string `json:"rName,omitempty"`
+	LinkedSchema       string `json:"schema,omitempty"`
+	IsEmbedded         bool   `json:"embed,omitempty"`
+	CounterName        string `json:"counter,omitempty"`
+	ReverseCounterName string `json:"rCounter,omitempty"`
 }

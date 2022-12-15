@@ -1,6 +1,8 @@
 package schemata
 
 import (
+	"encoding/json"
+
 	interfaces "github.com/flutter_go/framework/base"
 	goInterfaces "github.com/flutter_go/framework/gointerfaces"
 	enums "github.com/flutter_go/framework/schemata/enums"
@@ -13,6 +15,7 @@ type Field struct {
 	goInterfaces.Ordered
 	interfaces.Embedded //Field is Embedded and not Referable
 	goInterfaces.Detail
+	goInterfaces.Tagged
 	Type            enums.DataType              `json:"type"`
 	DefaultValue    interface{}                 `json:"default,omitempty"`         //any value type
 	Confidentiality enums.ConfidentialityString `json:"confidentiality,omitempty"` //default is of parent schema
@@ -27,7 +30,6 @@ type Field struct {
 	Pattern         string                      `json:"pattern,omitempty"`     //regex
 	State           enums.SchemaState           `json:"state,omitempty"`
 	Index           enums.Indexed               `json:"index,omitempty"`
-	Tags            []string                    `json:"tags,omitempty"`
 }
 
 func (a Field) Compare(b Field) int { //first by name and then by the order
@@ -50,4 +52,19 @@ func NewFieldByName(name string) *Field {
 	s := Field{}
 	s.Name = name
 	return &s
+}
+
+func (w Field) MarshalJSON() ([]byte, error) {
+	//TODO: This method must be overridden
+	return json.Marshal(struct {
+		Field
+		Type0 string `json:"t0"`
+	}{
+		//add all other fields
+		Type0: w.Type0(),
+	})
+}
+
+func (p Field) Type0() string {
+	return "Field"
 }
