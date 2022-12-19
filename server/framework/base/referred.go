@@ -10,12 +10,13 @@ import (
 )
 
 type Referred struct {
-	Data                   //extends by embedding Entry
+	Data                   //extends by embedding Entry. This holds the current consolidated version only
 	CreatedBy0 string      `json:"cBy0"` //ChangedBy of v=0
 	CreatedOn0 time.Time   `json:"cOn0"`
 	DeletedBy0 string      `json:"dBy0,omitempty"` //ChangedBy of v=last
 	DeletedOn0 time.Time   `json:"dOn0,omitempty"`
 	Old0       []Reference `json:"old0,omitempty"`
+	History0   []Data      `json:"history0,omitempty"` //version is the index. Only the changed fields per entry
 }
 
 func (d *Referred) String() string {
