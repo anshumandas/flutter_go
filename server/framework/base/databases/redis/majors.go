@@ -52,6 +52,7 @@ func Exists(key string) (bool, error) {
 	return isOK, err
 }
 
+//This function should not be available to the application API and should only be used for internal framework usage
 func Delete(key string) error {
 	//TODO for items delete only sets state as inactive and does not delete
 	conn := Pool.Get()
