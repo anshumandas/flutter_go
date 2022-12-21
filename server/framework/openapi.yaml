@@ -1,34 +1,34 @@
 openapi: 3.0.1
 info:
-  title: Generic App 
-  description: 'This is a sample api for a generic app. Authorization partneeds to be worked on.'
-  termsOfService: http://tella.ai/terms/
+  title: Schemata App 
+  description: 'This is a sample schema for a generic app. Authorization partneeds to be worked on.'
+  termsOfService: http://schemata.ai/terms/
   contact:
-    email: apiteam@tella.ai
+    email: schemateam@schemata.ai
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   version: 1.0.0
 externalDocs:
   description: Find out more about Swagger
-  url: http://tella.ai
+  url: http://schemata.ai
 servers:
 - url: https://localhost:8080
 tags:
-- name: item
-  description: Everything about item. All shouldbe able to read and create but update only their own items.
+- name: data
+  description: Everything about data. All shouldbe able to read and create but update only their own items.
   externalDocs:
     description: Find out more
-    url: http://tella.ai
-- name: api
-  description: Access api. Only admin should be able to write and all should be able to read
+    url: http://schemata.ai
+- name: schema
+  description: Access schema. Only admin should be able to write and all should be able to read
 - name: tag
   description: Access tags. Tags get added via items. All should be able to read and write.
 - name: user
   description: Operations about user
   externalDocs:
     description: Find out more about our store
-    url: http://tella.ai
+    url: http://schemata.ai
 paths:
   /tags:
     get:
@@ -60,13 +60,13 @@ paths:
           content: {}
       security:
       - api_key: []
-  /apis:
+  /schemas:
     get:
       tags:
-      - api
-      summary: Lists all api names
+      - schema
+      summary: Lists all schema names
       description: Name and uri can be provided
-      operationId: listAPIs
+      operationId: listSchemas
       responses:
         200:
           description: successful operation
@@ -75,34 +75,34 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/API'
+                  $ref: '#/components/schemas/Schema'
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/API'
+                  $ref: '#/components/schemas/Schema'
         400:
-          description: Invalid api name
+          description: Invalid schema name
           content: {}
         404:
-          description: Item not found
+          description: ReferredData not found
           content: {}
       security:
       - api_key: []
     post:
       tags:
-      - api
-      summary: Add a new API
-      operationId: addAPI
+      - schema
+      summary: Add a new Schema
+      operationId: addSchema
       requestBody:
-        description: API object that needs to be added to the store
+        description: Schema object that needs to be added to the store
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/API'
+              $ref: '#/components/schemas/Schema'
           application/xml:
             schema:
-              $ref: '#/components/schemas/API'
+              $ref: '#/components/schemas/Schema'
         required: true
       responses:
         405:
@@ -111,15 +111,15 @@ paths:
       security:
       - api_key: []
       x-codegen-request-body-name: body
-  /apis/{apiName}:
+  /schemas/{schemaName}:
     get:
       tags:
-      - api
-      summary: Lists sub api
-      description: Name and further sub-api can be provided
-      operationId: listChildrenAPIs
+      - schema
+      summary: Lists nested schemas if any
+      description: Name and further sub-schema can be provided
+      operationId: listChildrenSchemas
       parameters:
-        - $ref: '#/components/parameters/apiName'
+        - $ref: '#/components/parameters/schemaName'
       responses:
         200:
           description: successful operation
@@ -128,36 +128,36 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/API'
+                  $ref: '#/components/schemas/Schema'
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/API'
+                  $ref: '#/components/schemas/Schema'
         400:
-          description: Invalid api name
+          description: Invalid schema name
           content: {}
         404:
-          description: API not found
+          description: Schema not found
           content: {}
       security:
       - api_key: []
     post:
       tags:
-      - item
-      summary: Add a new item to the API
-      operationId: addItem
+      - data
+      summary: Add a new data to the Schema
+      operationId: addData
       parameters:
-        - $ref: '#/components/parameters/apiName'
+        - $ref: '#/components/parameters/schemaName'
       requestBody:
-        description: API object that needs to be added to the store
+        description: Schema object that needs to be added to the store
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Item'
+              $ref: '#/components/schemas/ReferredData'
           application/xml:
             schema:
-              $ref: '#/components/schemas/Item'
+              $ref: '#/components/schemas/ReferredData'
         required: true
       responses:
         405:
@@ -168,21 +168,21 @@ paths:
         - write:items
         - read:items
       x-codegen-request-body-name: body
-  /api/{apiName}/findByStatus:
+  /schema/{schemaName}/findByStatus:
     get:
       tags:
-      - item
-      summary: Finds items by status within a given api
+      - data
+      summary: Finds items by status within a given schema
       description: Multiple status values can be provided with comma separated strings
-      operationId: findItemsByStatus
+      operationId: findDatasByStatus
       parameters:
-        - $ref: '#/components/parameters/apiName'
+        - $ref: '#/components/parameters/schemaName'
         - name: status
           in: query
           description: Status values that need to be considered for filter
           required: true
           schema:
-            $ref: '#/components/schemas/StatusEnum'
+            $ref: '#/components/schemas/DataStateEnum'
       responses:
         200:
           description: successful operation
@@ -191,12 +191,12 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Item'
+                  $ref: '#/components/schemas/ReferredData'
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Item'
+                  $ref: '#/components/schemas/ReferredData'
         400:
           description: Invalid status value
           content: {}
@@ -204,16 +204,16 @@ paths:
       - itemstore_auth:
         - write:items
         - read:items
-  /api/{apiName}/findByTags:
+  /schema/{schemaName}/findByTags:
     get:
       tags:
-      - item
-      summary: Finds items by tags within a given api
+      - data
+      summary: Finds items by tags within a given schema
       description: Muliple tags can be provided with comma separated strings. Use tag1,
         tag2, tag3 for testing.
-      operationId: findItemsByTags
+      operationId: findDatasByTags
       parameters:
-        - $ref: '#/components/parameters/apiName'
+        - $ref: '#/components/parameters/schemaName'
         - name: tags
           in: query
           description: Tags to filter by
@@ -232,12 +232,12 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Item'
+                  $ref: '#/components/schemas/ReferredData'
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Item'
+                  $ref: '#/components/schemas/ReferredData'
         400:
           description: Invalid tag value
           content: {}
@@ -245,42 +245,42 @@ paths:
       - itemstore_auth:
         - write:items
         - read:items
-  /api/{apiName}/{itemId}:
+  /schema/{schemaName}/{dataId}:
     get:
       tags:
-      - item
-      summary: Find item by ID. This can even be a sub-api
-      description: Returns a single item
-      operationId: getItemById
+      - data
+      summary: Find data by ID. This can even be a sub-schema
+      description: Returns a single data
+      operationId: getDataById
       parameters:
-        - $ref: '#/components/parameters/apiName'
-        - $ref: '#/components/parameters/itemId'
+        - $ref: '#/components/parameters/schemaName'
+        - $ref: '#/components/parameters/dataId'
       responses:
         200:
           description: successful operation
           content:
             application/xml:
               schema:
-                $ref: '#/components/schemas/Item'
+                $ref: '#/components/schemas/ReferredData'
             application/json:
               schema:
-                $ref: '#/components/schemas/Item'
+                $ref: '#/components/schemas/ReferredData'
         400:
           description: Invalid ID supplied
           content: {}
         404:
-          description: Item not found
+          description: ReferredData not found
           content: {}
       security:
       - api_key: []
     put:
       tags:
-      - item
-      summary: Updates a item in the store with form data
-      operationId: updateItem
+      - data
+      summary: Updates a data in the store with form data
+      operationId: updateData
       parameters:
-        - $ref: '#/components/parameters/apiName'
-        - $ref: '#/components/parameters/itemId'
+        - $ref: '#/components/parameters/schemaName'
+        - $ref: '#/components/parameters/dataId'
       requestBody:
         content:
           application/x-www-form-urlencoded:
@@ -288,10 +288,10 @@ paths:
               properties:
                 name:
                   type: string
-                  description: Updated name of the item
+                  description: Updated name of the data
                 status:
                   type: string
-                  description: Updated status of the item
+                  description: Updated status of the data
       responses:
         405:
           description: Invalid input
@@ -302,35 +302,35 @@ paths:
         - read:items
     delete:
       tags:
-      - item
-      summary: Deletes a item
-      operationId: deleteItem
+      - data
+      summary: Deletes a data
+      operationId: deleteData
       parameters:
         - name: api_key
           in: header
           schema:
             type: string
-        - $ref: '#/components/parameters/apiName'
-        - $ref: '#/components/parameters/itemId'
+        - $ref: '#/components/parameters/schemaName'
+        - $ref: '#/components/parameters/dataId'
       responses:
         400:
           description: Invalid ID supplied
           content: {}
         404:
-          description: Item not found
+          description: ReferredData not found
           content: {}
       security:
       - itemstore_auth:
         - write:items
         - read:items
-  /api/{apiName}/uploadItems:
+  /schema/{schemaName}/uploadDatas:
     post:
       tags:
-      - item
+      - data
       summary: uploads a file with items
-      operationId: uploadItems
+      operationId: uploadDatas
       parameters:
-        - $ref: '#/components/parameters/apiName'
+        - $ref: '#/components/parameters/schemaName'
       requestBody:
         content:
           multipart/form-data:
@@ -354,15 +354,15 @@ paths:
       - itemstore_auth:
         - write:items
         - read:items
-  /api/{apiName}/{itemId}/uploadFile:
+  /schema/{schemaName}/{dataId}/uploadFile:
     post:
       tags:
-      - item
-      summary: uploads a file to the item
+      - data
+      summary: uploads a file to the data
       operationId: uploadFile
       parameters:
-        - $ref: '#/components/parameters/apiName'
-        - $ref: '#/components/parameters/itemId'
+        - $ref: '#/components/parameters/schemaName'
+        - $ref: '#/components/parameters/dataId'
       requestBody:
         content:
           multipart/form-data:
@@ -386,19 +386,19 @@ paths:
       - itemstore_auth:
         - write:items
         - read:items
-  /apis/{apiName}/{itemId}/{child}:
+  /schemas/{schemaName}/{dataId}/{child}:
     get:
       tags:
-      - api
-      summary: Lists child api items
+      - schema
+      summary: Lists child schema items. e.g. /schemas/country/India/states
       description: Name and uri can be provided
-      operationId: listChildItems
+      operationId: listChildDatas
       parameters:
-      - $ref: '#/components/parameters/apiName'
-      - $ref: '#/components/parameters/itemId'
+      - $ref: '#/components/parameters/schemaName'
+      - $ref: '#/components/parameters/dataId'
       - name: child
         in: path
-        description: name of N api list to return
+        description: name of N schema list to return
         required: true
         schema:
           type: string
@@ -417,10 +417,10 @@ paths:
                 items:
                   $ref: '#/components/schemas/Reference'
         400:
-          description: Invalid api name
+          description: Invalid schema name
           content: {}
         404:
-          description: Item not found
+          description: ReferredData not found
           content: {}
       security:
       - api_key: []
@@ -625,7 +625,7 @@ components:
         phone:
           type: string
         userStatus:
-          $ref: '#/components/schemas/StatusEnum'
+          $ref: '#/components/schemas/DataStateEnum'
       xml:
         name: User
     Tag:
@@ -636,7 +636,7 @@ components:
       xml:
         name: Tag
     Reference:
-      description: Reference to an item or a sub-api 
+      description: Reference to an data or a sub-schema 
       anyOf:
       - type: object
         properties:
@@ -645,58 +645,86 @@ components:
           uri:
             type: string
       - type: string
-    API:
-      description: A api name with possible sub api 
+    Schema:
+      description: A Schema of an object being defined
       required:
       - name
       type: object
+      allOf:
+        - $ref: '#/components/schemas/ReferredData'
       properties:
-        name:
-          type: string
-        description:
-          type: string
-        children:
-          type: array
-          xml:
-            name: children
-            wrapped: true
-          items:
-            $ref: '#/components/schemas/API'
-      xml:
-        name: API
-    Item:
-      description: An item or a sub-api 
-      required:
-      - name
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
         name:
           type: string
         description:
           type: string
         tags:
           type: array
+          items:
+            $ref: '#/components/schemas/Tag'
+        children:
+          type: array
+          xml:
+            name: children
+            wrapped: true
+          items:
+            $ref: '#/components/schemas/Schema'
+      xml:
+        name: ReferredData
+    ReferredData:
+      description: An data or a sub-schema 
+      required:
+      - name
+      type: object
+      properties:
+        id0:
+          type: integer
+          format: int64
+        type0:
+          type: string
+          description: 'name of the schema in which this data is stored'
+          readOnly: true
+        apiVersion0:
+          type: integer
+        pk0:
+          type: string
+        dataState0:
+          $ref: '#/components/schemas/DataStateEnum'
+        createdOn0:
+          type: string
+          format: datetime
+        createdBy0:
+          $ref: '#/components/schemas/UserRef'
+        addedOn0:
+          type: string
+          format: datetime
+        addedBy0:
+          $ref: '#/components/schemas/UserRef'
+        deletedOn0:
+          type: string
+          format: datetime
+        deletedBy0:
+          $ref: '#/components/schemas/UserRef'
+        workitem0:
+          type: string
+        history0:
+          type: array
           xml:
             name: tag
             wrapped: true
           items:
-            $ref: '#/components/schemas/Tag'
-        type:
-          type: string
-          description: 'name of the api in which this item is stored'
-          readOnly: true
-        status:
-          $ref: '#/components/schemas/StatusEnum'
-        createdBy:
-          $ref: '#/components/schemas/UserRef'
+            $ref: '#/components/schemas/ReferredData'
+        old0:
+          type: array
+          xml:
+            name: tag
+            wrapped: true
+          items:
+            $ref: '#/components/schemas/ReferredData'
       xml:
-        name: Item
-    StatusEnum:
+        name: ReferredData
+    DataStateEnum:
       type: string
-      description: item status in the store
+      description: data status in the store
       readOnly: true
       enum:
       - active
@@ -713,17 +741,17 @@ components:
         message:
           type: string
   parameters:
-    apiName: 
-      name: apiName
+    schemaName: 
+      name: schemaName
       in: path
-      description: name of api to return
+      description: name of schema to return
       required: true
       schema:
         type: string
-    itemId:
-      name: itemId
+    dataId:
+      name: dataId
       in: path
-      description: ID of item to update
+      description: ID of data to update
       required: true
       schema:
         type: integer
@@ -733,7 +761,7 @@ components:
       type: oauth2
       flows:
         implicit:
-          authorizationUrl: http://itemsstore.tella.ai/oauth/dialog
+          authorizationUrl: http://itemsstore.schemata.ai/oauth/dialog
           scopes:
             write:items: modify items in your account
             read:items: read your items
