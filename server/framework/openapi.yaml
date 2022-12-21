@@ -22,44 +22,12 @@ tags:
     url: http://schemata.ai
 - name: schema
   description: Access schema. Only admin should be able to write and all should be able to read
-- name: tag
-  description: Access tags. Tags get added via items. All should be able to read and write.
 - name: user
   description: Operations about user
   externalDocs:
     description: Find out more about our store
     url: http://schemata.ai
 paths:
-  /tags:
-    get:
-      tags:
-      - tag
-      summary: Lists all tag names
-      description: Name of tags
-      operationId: listTags
-      responses:
-        200:
-          description: successful operation
-          content:
-            application/xml:
-              schema:
-                type: array
-                description: return just the string and not the object
-                items:
-                  type: string
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: string
-        400:
-          description: Invalid tag name
-          content: {}
-        404:
-          description: Tags not found
-          content: {}
-      security:
-      - api_key: []
   /schemas:
     get:
       tags:
@@ -67,6 +35,9 @@ paths:
       summary: Lists all schema names
       description: Name and uri can be provided
       operationId: listSchemas
+      parameters:
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/offset'
       responses:
         200:
           description: successful operation
@@ -115,10 +86,43 @@ paths:
     get:
       tags:
       - schema
-      summary: Lists nested schemas if any
+      summary: get the details of the given schema
+      description: Schema details
+      operationId: getSchema
+      parameters:
+        - $ref: '#/components/parameters/schemaName'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/xml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Schema'
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Schema'
+        400:
+          description: Invalid schema name
+          content: {}
+        404:
+          description: Schema not found
+          content: {}
+      security:
+      - api_key: []
+  /schemas/{schemaName}/relations:
+    get:
+      tags:
+      - schema
+      summary: Lists the relationships of the said schema
       description: Name and further sub-schema can be provided
       operationId: listChildrenSchemas
       parameters:
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/offset'
         - $ref: '#/components/parameters/schemaName'
       responses:
         200:
@@ -144,8 +148,8 @@ paths:
       - api_key: []
     post:
       tags:
-      - data
-      summary: Add a new data to the Schema
+      - schema
+      summary: Add a new relation to the Schema
       operationId: addData
       parameters:
         - $ref: '#/components/parameters/schemaName'
@@ -168,7 +172,7 @@ paths:
         - write:items
         - read:items
       x-codegen-request-body-name: body
-  /schema/{schemaName}/findByStatus:
+  /data/{schemaName}:
     get:
       tags:
       - data
@@ -179,8 +183,8 @@ paths:
         - $ref: '#/components/parameters/schemaName'
         - name: status
           in: query
-          description: Status values that need to be considered for filter
-          required: true
+          description: Status values that need to be considered for filter. default active
+          required: false
           schema:
             $ref: '#/components/schemas/DataStateEnum'
       responses:
@@ -204,48 +208,7 @@ paths:
       - itemstore_auth:
         - write:items
         - read:items
-  /schema/{schemaName}/findByTags:
-    get:
-      tags:
-      - data
-      summary: Finds items by tags within a given schema
-      description: Muliple tags can be provided with comma separated strings. Use tag1,
-        tag2, tag3 for testing.
-      operationId: findDatasByTags
-      parameters:
-        - $ref: '#/components/parameters/schemaName'
-        - name: tags
-          in: query
-          description: Tags to filter by
-          required: true
-          style: form
-          explode: true
-          schema:
-            type: array
-            items:
-              type: string
-      responses:
-        200:
-          description: successful operation
-          content:
-            application/xml:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/ReferredData'
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/ReferredData'
-        400:
-          description: Invalid tag value
-          content: {}
-      security:
-      - itemstore_auth:
-        - write:items
-        - read:items
-  /schema/{schemaName}/{dataId}:
+  /data/{schemaName}/{dataId}:
     get:
       tags:
       - data
@@ -255,6 +218,8 @@ paths:
       parameters:
         - $ref: '#/components/parameters/schemaName'
         - $ref: '#/components/parameters/dataId'
+        - $ref: '#/components/parameters/versionMin'
+        - $ref: '#/components/parameters/versionMax'
       responses:
         200:
           description: successful operation
@@ -323,7 +288,7 @@ paths:
       - itemstore_auth:
         - write:items
         - read:items
-  /schema/{schemaName}/uploadDatas:
+  /data/{schemaName}/uploadDatas:
     post:
       tags:
       - data
@@ -354,7 +319,7 @@ paths:
       - itemstore_auth:
         - write:items
         - read:items
-  /schema/{schemaName}/{dataId}/uploadFile:
+  /data/{schemaName}/{dataId}/uploadFile:
     post:
       tags:
       - data
@@ -386,14 +351,16 @@ paths:
       - itemstore_auth:
         - write:items
         - read:items
-  /schemas/{schemaName}/{dataId}/{child}:
+  /data/{schemaName}/{dataId}/{child}:
     get:
       tags:
-      - schema
-      summary: Lists child schema items. e.g. /schemas/country/India/states
+      - data
+      summary: Lists child schema items. e.g. /data/country/India/states
       description: Name and uri can be provided
       operationId: listChildDatas
       parameters:
+      - $ref: '#/components/parameters/limit'
+      - $ref: '#/components/parameters/offset'
       - $ref: '#/components/parameters/schemaName'
       - $ref: '#/components/parameters/dataId'
       - name: child
@@ -756,6 +723,44 @@ components:
       schema:
         type: integer
         format: int64
+    limit:
+      name: limit
+      in: query
+      description: size for pagination
+      required: false
+      schema:
+        type: integer
+        format: int64
+    offset:
+      name: offset
+      in: query
+      description: start point for pagination
+      required: false
+      schema:
+        type: integer
+        format: int64
+    versionMin:    
+      name: versionMin
+      in: query
+      description: Tags to filter by
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: array
+        items:
+          type: string
+    versionMax:
+      name: versionMax
+      in: query
+      description: Tags to filter by
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: array
+        items:
+          type: string
   securitySchemes:
     itemstore_auth:
       type: oauth2
