@@ -9,16 +9,21 @@ package interfaces
 
 import (
 	"encoding/json"
+	"time"
 
+	"github.com/flutter_go/framework/base/enums"
 	goInterfaces "github.com/flutter_go/framework/gointerfaces"
 )
 
-type Data struct {
-	Event
-	goInterfaces.PKeyed
+type Audited struct {
+	goInterfaces.Versioned
+	Action0   enums.ActionType `json:"ac0"`
+	By0       string           `json:"aBy0"` //for v=0 its created & other version it is updated. this stored the id only and links to User table
+	On0       time.Time        `json:"aOn0"`
+	WorkItem0 string           `json:"w0,omitempty"` //v=0 is creation and other v are mod workflows. Only straight WF. For parallel use documents
 }
 
-func (d *Data) String() string {
+func (d *Audited) String() string {
 	res, _ := json.Marshal(d)
 	return string(res)
 }

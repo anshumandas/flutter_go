@@ -7,16 +7,20 @@ package interfaces
 import (
 	"encoding/json"
 	"time"
+
+	enums "github.com/flutter_go/framework/base/enums"
+	goInterfaces "github.com/flutter_go/framework/gointerfaces"
 )
 
 type Referred struct {
-	Data                   //extends by embedding Entry. This holds the current consolidated version only
-	CreatedBy0 string      `json:"cBy0"` //ChangedBy of v=0
-	CreatedOn0 time.Time   `json:"cOn0"`
-	DeletedBy0 string      `json:"dBy0,omitempty"` //ChangedBy of v=last
-	DeletedOn0 time.Time   `json:"dOn0,omitempty"`
-	Old0       []Reference `json:"old0,omitempty"`
-	History0   []Data      `json:"history0,omitempty"` //version is the index. Only the changed fields per entry
+	goInterfaces.Versioned                   //holds the current version
+	Data                                     //extends by embedding Entry. This holds the current consolidated version only
+	DataState0             enums.DataState   `json:"st0"`  //Delete just changes the state of the last version that gets added
+	CreatedBy0             string            `json:"cBy0"` //we keep this for easier access
+	CreatedOn0             time.Time         `json:"cOn0"`
+	LastAction0            Audited           `json:"last0,omitempty"`
+	Old0                   []Reference       `json:"old0,omitempty"`
+	History0               map[int]DataEntry `json:"history0,omitempty"` //we use map as query need not be from v1. version is the key. Only the changed fields per entry. The containing data should be the one before minVersion asked. If current version them this field is not present.
 }
 
 func (d *Referred) String() string {

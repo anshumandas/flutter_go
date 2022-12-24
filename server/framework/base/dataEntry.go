@@ -9,16 +9,14 @@ package interfaces
 
 import (
 	"encoding/json"
-
-	goInterfaces "github.com/flutter_go/framework/gointerfaces"
 )
 
-type Data struct {
-	Event
-	goInterfaces.PKeyed
+type DataEntry struct {
+	Data
+	Audited
 }
 
-func (d *Data) String() string {
+func (d *DataEntry) String() string {
 	res, _ := json.Marshal(d)
 	return string(res)
 }

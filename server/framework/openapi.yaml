@@ -132,12 +132,12 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Schema'
+                  $ref: '#/components/schemas/Relationship'
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Schema'
+                  $ref: '#/components/schemas/Relationship'
         400:
           description: Invalid schema name
           content: {}
@@ -158,10 +158,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ReferredData'
+              $ref: '#/components/schemas/Relationship'
           application/xml:
             schema:
-              $ref: '#/components/schemas/ReferredData'
+              $ref: '#/components/schemas/Relationship'
         required: true
       responses:
         405:
@@ -288,12 +288,12 @@ paths:
       - itemstore_auth:
         - write:items
         - read:items
-  /data/{schemaName}/uploadDatas:
+  /data/{schemaName}/uploadFile:
     post:
       tags:
       - data
-      summary: uploads a file with items
-      operationId: uploadDatas
+      summary: uploads a file with items for the stated schema
+      operationId: uploadData
       parameters:
         - $ref: '#/components/parameters/schemaName'
       requestBody:
@@ -314,7 +314,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ApiResponse'
+                $ref: '#/components/schemas/UploadResponse'
       security:
       - itemstore_auth:
         - write:items
@@ -323,7 +323,7 @@ paths:
     post:
       tags:
       - data
-      summary: uploads a file to the data
+      summary: uploads a file to the specified data
       operationId: uploadFile
       parameters:
         - $ref: '#/components/parameters/schemaName'
@@ -346,16 +346,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ApiResponse'
+                $ref: '#/components/schemas/UploadResponse'
       security:
       - itemstore_auth:
         - write:items
         - read:items
-  /data/{schemaName}/{dataId}/{child}:
+  /data/{schemaName}/{dataId}/{relationName}:
     get:
       tags:
       - data
-      summary: Lists child schema items. e.g. /data/country/India/states
+      summary: Lists related items. e.g. /data/country/India/states
       description: Name and uri can be provided
       operationId: listChildDatas
       parameters:
@@ -363,9 +363,9 @@ paths:
       - $ref: '#/components/parameters/offset'
       - $ref: '#/components/parameters/schemaName'
       - $ref: '#/components/parameters/dataId'
-      - name: child
+      - name: relationName
         in: path
-        description: name of N schema list to return
+        description: name of relation list to return
         required: true
         schema:
           type: string
@@ -377,12 +377,12 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Reference'
+                  $ref: '#/components/schemas/Relation'
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Reference'
+                  $ref: '#/components/schemas/Relation'
         400:
           description: Invalid schema name
           content: {}
@@ -575,6 +575,8 @@ components:
           type: string
     User:
       type: object
+      allOf:
+        - $ref: '#/components/schemas/Tagged'
       properties:
         id:
           type: integer
@@ -595,23 +597,28 @@ components:
           $ref: '#/components/schemas/DataStateEnum'
       xml:
         name: User
-    Tag:
+    Tagged:
       type: object
       properties:
-        name:
-          type: string
+        tags:
+          type: array
+          items: 
+            type: string
       xml:
         name: Tag
     Reference:
-      description: Reference to an data or a sub-schema 
+      description: Reference to a data 
+      readOnly: true
       anyOf:
       - type: object
         properties:
-          name:
+          summary:
             type: string
-          uri:
+          link:
+            description: contains the type, id, pk, sk, version information
             type: string
       - type: string
+        description: in case the summary is not required and only link
     Schema:
       description: A Schema of an object being defined
       required:
@@ -619,85 +626,417 @@ components:
       type: object
       allOf:
         - $ref: '#/components/schemas/ReferredData'
+        - $ref: '#/components/schemas/Detail'
+        - $ref: '#/components/schemas/Tagged'
+      anyOf:
+        - $ref: '#/components/schemas/FormSchema'
+        - $ref: '#/components/schemas/ChoiceSchema'
       properties:
+        namespace:
+          type: string
+        plural:
+          type: string
+        type:
+          type: string
+          enum:
+          - Enum
+          - Set
+          - Referrable
+          - Embedded
+        confidentiality:
+          type: string
+          enum:
+          - Public
+          - Internal
+          - Confidential
+          - Restricted
+        uiPersistence:
+          type: string
+          enum:
+          - LRU
+          - Session
+          - Profile
+          - AppFirstLoad
+          - InApp
+        state:
+          $ref: '#/components/schemas/SchemaStateEnum'
+      xml:
+        name: Schema
+    FormSchema:
+      description: A Schema of an object being defined
+      required:
+      - fields
+      type: object
+      properties:
+        fields:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/Field'
+        relations:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/Relation'
+        groups:
+          type: array
+          items:
+            $ref: '#/components/schemas/Group'
+        inherits:
+          type: array
+          items:
+            $ref: '#/components/schemas/SchemaRef'
+        inheritedBy:
+          type: array
+          items:
+            $ref: '#/components/schemas/SchemaRef'
+        confidentiality:
+          type: string
+          enum:
+          - Public
+          - Internal
+          - Confidential
+          - Restricted
+        retention:
+          description: duration in millisecs
+          type: number
+        workflow:
+          type: string
+        within:
+          $ref: '#/components/schemas/SchemaRef'
+    ChoiceSchema:
+      description: A Schema of an object being defined
+      required:
+      - fields
+      type: object
+      properties:
+        choices:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/Choice'
+    SchemaRef:
+      type: object
+      readOnly: true
+      properties:
+        id:
+          type: integer
+          format: int64
         name:
           type: string
-        description:
-          type: string
-        tags:
-          type: array
-          items:
-            $ref: '#/components/schemas/Tag'
-        children:
-          type: array
-          xml:
-            name: children
-            wrapped: true
-          items:
-            $ref: '#/components/schemas/Schema'
-      xml:
-        name: ReferredData
-    ReferredData:
+    Detail:
       description: An data or a sub-schema 
       required:
       - name
       type: object
       properties:
+        name:
+          type: string
+        description:
+          type: string
+    Group:
+      description: An data or a sub-schema 
+      required:
+      - name
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/Detail'
+      oneOf:
+        - type: object
+          properties:
+            fields:
+              type: array
+              items:
+                type: string
+        - type: object
+          properties:
+            visibility:
+              type: object
+              additionalProperties:
+                type: string
+        - type: object
+          properties:
+            content:
+              type: object
+              additionalProperties:
+                type: string
+        - type: object
+          properties:
+            indexType: 
+              $ref: '#/components/schemas/IndexTypeEnum'
+            fields:
+              type: array
+              items:
+                type: string
+      properties:
+        type:
+          type: string
+          enum:
+            - OneOf
+            - AnyOf
+            - Visibility
+            - Content
+            - Index
+    IndexTypeEnum: 
+      type: string
+      enum:
+        - Ascending
+        - Descending
+        - UniqueAscending
+        - UniqueDescending
+        - Text
+    Choice:
+      description: An data or a sub-schema 
+      required:
+      - name
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/DataEntry'
+        - $ref: '#/components/schemas/Detail'
+        - $ref: '#/components/schemas/Tagged'
+      properties:
+        value:
+          type: object
+    Field:
+      description: An data or a sub-schema 
+      required:
+      - name
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/DataEntry'
+        - $ref: '#/components/schemas/Detail'
+      anyOf:
+        - type: object
+          description: used for number data types
+          properties:
+            min:
+              type: number
+            max:
+              type: number
+            step:
+              type: number
+        - type: object
+          description: used for date data types
+          properties:
+            min:
+              type: string
+              format: datetime
+            max:
+              type: string
+              format: datetime
+            step:
+              type: string
+              format: datetime
+        - type: object
+          description: used for string data types
+          properties:
+            options:
+              type: array
+              items: 
+                type: string
+            allowOthers:
+              type: boolean
+        - type: object
+          description: used for string data types
+          properties:
+            exclude:
+              type: array
+              items: 
+                type: string
+        - type: object
+          description: used for string data types
+          properties:
+            pattern:
+              type: string
+            
+      properties:
+        type:
+          type: string
+          enum:
+          - string
+          - number
+          - boolean
+          - date
+        defaultValue:
+          type: object
+        confidentiality:
+          type: string
+          enum:
+          - Internal
+          - Confidential
+          - Restricted
+          - Secret
+        required:
+          type: boolean
+        editability:
+          type: string
+          enum:
+          - Mutable
+          - Immutable
+          - SummaryField
+          - KeyField
+          - SystemField
+        state:
+          $ref: '#/components/schemas/SchemaStateEnum'
+        indexed:
+          $ref: '#/components/schemas/IndexTypeEnum'
+      xml:
+        name: Field
+    Relationship:
+      description: An data or a sub-schema 
+      required:
+      - name
+      - linkedSchema
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/DataEntry'
+        - $ref: '#/components/schemas/Detail'
+      properties:
+        schema:
+          $ref: '#/components/schemas/SchemaRef'
+        reverseName:
+          type: string
+        embedded:
+          type: boolean
+        counterName:
+          type: string
+        reverseCounterName:
+          type: string
+        type:
+          type: string
+          enum:
+          - List
+          - Set
+          - SortedSet
+          - OrderedSet
+          - Map
+          - LinkedMap
+      xml:
+        name: Relationship
+    Data:
+      description: An data or a sub-schema
+      type: object
+      properties:
         id0:
           type: integer
           format: int64
+          readOnly: true
         type0:
           type: string
           description: 'name of the schema in which this data is stored'
           readOnly: true
         apiVersion0:
           type: integer
+          readOnly: true
         pk0:
           type: string
+          readOnly: true
+      additionalProperties: true
+      xml:
+        name: Data
+    Audited:
+      description: An data or a sub-schema 
+      type: object
+      readOnly: true
+      properties:
+        version0:
+          type: integer
+        action0:
+          $ref: '#/components/schemas/ActionEnum'
+        On0:
+          type: string
+          format: datetime
+        By0:
+          $ref: '#/components/schemas/UserRef'
+        workitem0:
+          type: string
+      xml:
+        name: Audited
+    DataEntry:
+      description: An data or a sub-schema 
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/Data'
+        - $ref: '#/components/schemas/Audited'
+    ReferredData:
+      description: A data that is referred. It can contain some fields of native data types and also relations which are embedded. Referred relations are called via separate API (we can use HATEOAS links in generated openapi code) 
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/Data'
+      properties:
         dataState0:
           $ref: '#/components/schemas/DataStateEnum'
         createdOn0:
           type: string
           format: datetime
+          readOnly: true
         createdBy0:
           $ref: '#/components/schemas/UserRef'
+        lastAction0:
+          $ref: '#/components/schemas/Audited'
+        history0:
+          type: object
+          readOnly: true
+          additionalProperties:
+            $ref: '#/components/schemas/DataEntry'
+        old0:
+          type: array
+          readOnly: true
+          items:
+            $ref: '#/components/schemas/ReferredData'
+        version0:
+          description: current version
+          type: number
+      xml:
+        name: ReferredData
+    Relation:
+      description: An data or a sub-schema 
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/Reference'
+      properties:
+        dataState0:
+          $ref: '#/components/schemas/DataStateEnum'
         addedOn0:
           type: string
           format: datetime
         addedBy0:
           $ref: '#/components/schemas/UserRef'
-        deletedOn0:
-          type: string
-          format: datetime
-        deletedBy0:
-          $ref: '#/components/schemas/UserRef'
-        workitem0:
-          type: string
-        history0:
-          type: array
-          xml:
-            name: tag
-            wrapped: true
-          items:
-            $ref: '#/components/schemas/ReferredData'
-        old0:
-          type: array
-          xml:
-            name: tag
-            wrapped: true
-          items:
-            $ref: '#/components/schemas/ReferredData'
+        lastAction0:
+          $ref: '#/components/schemas/Audited'
       xml:
-        name: ReferredData
+        name: Relation
+    ActionEnum:
+      type: string
+      description: action done
+      readOnly: true
+      enum:
+      - create
+      - read
+      - update
+      - delete
+      - list
+      - add
+      - remove
     DataStateEnum:
       type: string
       description: data status in the store
       readOnly: true
       enum:
+      - stored
+      - validated
+      - workflow
       - active
-      - inWorkflow
       - inactive
-    ApiResponse:
+    SchemaStateEnum:
+      type: string
+      description: schema status in the store
+      readOnly: true
+      enum:
+      - active
+      - proposed
+      - rejected
+      - deprecated
+      - dropped
+    UploadResponse:
+      description: used for providing upload action response
       type: object
       properties:
         code:

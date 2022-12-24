@@ -1,7 +1,7 @@
 package enums
 
 import (
-    "errors"
+	"errors"
 )
 
 type DataState int8
@@ -13,30 +13,30 @@ this can be replaced by another type for a schemas state field
 
 const (
 	UndefinedDataState = iota - 1 //while we can use << iota to make it bitwise, will prefer DataState[] in the model instead
-	InCreateWorkflowDataState 
-	ActiveDataState 
-	InModifyWorkflowDataState 
-	InDeleteWorkflowDataState 
-	InactiveDataState 
+	StoredDataState
+	ValidatedDataState
+	WorkflowDataState
+	ActiveDataState
+	InactiveDataState
 )
 
 //Just use the Enum directly instead of Enum.ordinal()
 
 func ListDataStates() [5]string {
-	l := [...]string{ "InCreateWorkflow", "Active", "InModifyWorkflow", "InDeleteWorkflow", "Inactive",  }
+	l := [...]string{"Stored", "Validated", "Workflow", "Active", "Inactive"}
 	return l
 }
 
-func (s DataState) String() string { //This is same as Enum.name 
+func (s DataState) String() string { //This is same as Enum.name
 	switch s {
-	case InCreateWorkflowDataState:
-		return "InCreateWorkflow"
+	case StoredDataState:
+		return "Stored"
 	case ActiveDataState:
 		return "Active"
-	case InModifyWorkflowDataState:
-		return "InModifyWorkflow"
-	case InDeleteWorkflowDataState:
-		return "InDeleteWorkflow"
+	case ValidatedDataState:
+		return "Validated"
+	case WorkflowDataState:
+		return "Workflow"
 	case InactiveDataState:
 		return "Inactive"
 	}
@@ -45,28 +45,27 @@ func (s DataState) String() string { //This is same as Enum.name
 
 func ParseDataState(s string) (DataState, error) {
 	switch s {
-	case "InCreateWorkflow":
-		return InCreateWorkflowDataState, nil
+	case "Stored":
+		return StoredDataState, nil
 	case "Active":
+		return ValidatedDataState, nil
+	case "Validated":
+		return WorkflowDataState, nil
+	case "Workflow":
 		return ActiveDataState, nil
-	case "InModifyWorkflow":
-		return InModifyWorkflowDataState, nil
-	case "InDeleteWorkflow":
-		return InDeleteWorkflowDataState, nil
 	case "Inactive":
 		return InactiveDataState, nil
 	}
 	return UndefinedDataState, errors.New("unknown DataState")
 }
 
-
 func (s DataState) Boolean() bool {
 	switch s {
-	case InCreateWorkflowDataState:
+	case StoredDataState:
 		return true
-	case InModifyWorkflowDataState:
+	case WorkflowDataState:
 		return true
-	case InDeleteWorkflowDataState:
+	case ActiveDataState:
 		return true
 	}
 	return false

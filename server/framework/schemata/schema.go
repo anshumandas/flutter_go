@@ -15,10 +15,11 @@ type Schema struct {
 	interfaces.Referred //Schema is a Data
 	goInterfaces.Detail //Schema itself is a Detail
 	goInterfaces.Tagged
-	Type      enums.SchemaType  `json:"type"`
-	Namespace string            `json:"ns,omitempty"`
-	Plural    string            `json:"plural,omitempty"`
-	State     enums.SchemaState `json:"state"`
+	Type          enums.SchemaType  `json:"type"`
+	Namespace     string            `json:"ns,omitempty"`
+	Plural        string            `json:"plural,omitempty"`
+	State         enums.SchemaState `json:"state"`
+	UIPersistence enums.Persistence `json:"ui,omitempty"`
 
 	FormSchema    `visibility_Type:"-EnumSchema,-SetSchema"` //Group visibility for Type. - means exclude. can be comma delimited
 	ChoicesSchema `visibility_Type:"EnumSchema,SetSchema"`   //Group visibility for Type. - means exclude. can be comma delimited

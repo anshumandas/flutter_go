@@ -1,7 +1,7 @@
 package enums
 
 import (
-    "errors"
+	"errors"
 )
 
 type ActionType int8
@@ -9,100 +9,58 @@ type ActionTypeString string //provides a union with string and thus lets us ext
 
 const (
 	UndefinedActionType = iota - 1 //while we can use << iota to make it bitwise, will prefer ActionType[] in the model instead
-	ApproveActionType 
-	EditApproveActionType 
-	RejectActionType 
-	ForwardActionType 
-	ReturnActionType 
-	ReturnToSourceActionType 
-	AcceptActionType 
-	AssignActionType 
-	UnassignActionType 
-	UnacceptActionType 
-	SplitActionType 
-	MergeActionType 
-	ErrorActionType 
-	TaskActionType 
-	TaskCompletedActionType 
+	CreateActionType
+	ReadActionType
+	UpdateActionType
+	DeleteActionType
+	ListActionType
+	AddActionType
+	RemoveActionType
 )
 
 //Just use the Enum directly instead of Enum.ordinal()
 
-func ListActionTypes() [15]string {
-	l := [...]string{ "Approve", "EditApprove", "Reject", "Forward", "Return", "ReturnToSource", "Accept", "Assign", "Unassign", "Unaccept", "Split", "Merge", "Error", "Task", "TaskCompleted",  }
+func ListActionTypes() [7]string {
+	l := [...]string{"Create", "Read", "Update", "Delete", "List", "Add", "Remove"}
 	return l
 }
 
-func (s ActionType) String() string { //This is same as Enum.name 
+func (s ActionType) String() string { //This is same as Enum.name
 	switch s {
-	case ApproveActionType:
-		return "Approve"
-	case EditApproveActionType:
-		return "EditApprove"
-	case RejectActionType:
-		return "Reject"
-	case ForwardActionType:
-		return "Forward"
-	case ReturnActionType:
-		return "Return"
-	case ReturnToSourceActionType:
-		return "ReturnToSource"
-	case AcceptActionType:
-		return "Accept"
-	case AssignActionType:
-		return "Assign"
-	case UnassignActionType:
-		return "Unassign"
-	case UnacceptActionType:
-		return "Unaccept"
-	case SplitActionType:
-		return "Split"
-	case MergeActionType:
-		return "Merge"
-	case ErrorActionType:
-		return "Error"
-	case TaskActionType:
-		return "Task"
-	case TaskCompletedActionType:
-		return "TaskCompleted"
+	case CreateActionType:
+		return "Create"
+	case ReadActionType:
+		return "Read"
+	case UpdateActionType:
+		return "Update"
+	case DeleteActionType:
+		return "Delete"
+	case ListActionType:
+		return "List"
+	case AddActionType:
+		return "Add"
+	case RemoveActionType:
+		return "Remove"
 	}
 	return "unknown"
 }
 
 func ParseActionType(s string) (ActionType, error) {
 	switch s {
-	case "Approve":
-		return ApproveActionType, nil
-	case "EditApprove":
-		return EditApproveActionType, nil
-	case "Reject":
-		return RejectActionType, nil
-	case "Forward":
-		return ForwardActionType, nil
-	case "Return":
-		return ReturnActionType, nil
-	case "ReturnToSource":
-		return ReturnToSourceActionType, nil
-	case "Accept":
-		return AcceptActionType, nil
-	case "Assign":
-		return AssignActionType, nil
-	case "Unassign":
-		return UnassignActionType, nil
-	case "Unaccept":
-		return UnacceptActionType, nil
-	case "Split":
-		return SplitActionType, nil
-	case "Merge":
-		return MergeActionType, nil
-	case "Error":
-		return ErrorActionType, nil
-	case "Task":
-		return TaskActionType, nil
-	case "TaskCompleted":
-		return TaskCompletedActionType, nil
+	case "Create":
+		return CreateActionType, nil
+	case "Read":
+		return ReadActionType, nil
+	case "Update":
+		return UpdateActionType, nil
+	case "Delete":
+		return DeleteActionType, nil
+	case "List":
+		return ListActionType, nil
+	case "Add":
+		return AddActionType, nil
+	case "Remove":
+		return RemoveActionType, nil
 	}
 	return UndefinedActionType, errors.New("unknown ActionType")
 }
-
-
